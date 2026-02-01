@@ -468,5 +468,57 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 });
 
+// 게시판 접근 권한 체크 함수
+async function hasBoardInteractionPermission(boardType) {
+    // 로그인 상태 확인
+    if (!isLoggedIn()) {
+        return false;
+    }
+
+    // 자유게시판은 모든 로그인 사용자 접근 가능
+    if (boardType === 'all') {
+        return true;
+    }
+
+    // 사용자 직종 정보 가져오기
+    const userJob = getUserProfession();
+    const isCertified = isProfessionCertified();
+
+    console.log('권한 체크:', { boardType, userJob, isCertified });
+
+    // 인증되지 않은 사용자는 접근 불가
+    if (!isCertified || !userJob) {
+        console.log('인증되지 않은 사용자');
+        return false;
+    }
+
+    // 직종별 게시판 권한 매핑
+    const boardPermissionMap = {
+        'pt': '물리치료사',
+        'ot': '작업치료사',
+        'rt': '방사선사',
+        'mt': '임상병리사'
+    };
+
+    // 해당 게시판의 요구 직종 확인
+    const requiredJob = boardPermissionMap[boardType];
+
+    if (!requiredJob) {
+        console.log('알 수 없는 게시판 타입:', boardType);
+        return false;
+    }
+
+    // 사용자의 직종과 게시판 요구 직종 비교
+    const hasPermission = userJob === requiredJob;
+
+    console.log('권한 결과:', {
+        userJob,
+        requiredJob,
+        hasPermission
+    });
+
+    return hasPermission;
+}
+
 // 불필요한 함수 제거 (공통 구조로 통합)
 

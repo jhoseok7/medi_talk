@@ -1,45 +1,51 @@
 // 권한 체크 유틸리티 (직종별 게시판 상호작용)
 async function hasBoardInteractionPermission(boardType) {
-    if (boardType === 'all' || boardType === 'free') return true; // 자유게시판은 항상 허용
+    // 자유게시판은 항상 허용
+    if (boardType === 'all' || boardType === 'free') return true;
 
-    if (!window.isLoggedIn || !window.getCurrentUser) return false;
+    // 로그인 상태 확인
     if (!isLoggedIn()) return false;
 
-    const currentUser = getCurrentUser();
-    if (!currentUser) return false;
+    // 사용자 직종 정보 가져오기 (auth.js 함수 사용)
+    const userJob = getUserProfession();
+    const isCertified = isProfessionCertified();
 
-    try {
-        // Supabase에서 해당 사용자의 직종별 인증 상태 확인 (users 테이블 사용)
-        const professionMap = {
-            pt: '물리치료사',
-            ot: '작업치료사',
-            rt: '방사선사',
-            mt: '임상병리사',
-            dt: '치과기공사',
-            dh: '치과위생사'
-        };
+    console.log('글쓰기 권한 체크:', { boardType, userJob, isCertified });
 
-        const targetProfession = professionMap[boardType];
-        if (!targetProfession) return false;
-
-        const { data, error } = await window.supabaseClient
-            .from('users')
-            .select('job, is_verified')  // job 필드 사용
-            .eq('email', currentUser.email)
-            .single();
-
-        if (error) {
-            console.error('Permission check error:', error);
-            return false;
-        }
-
-        // 사용자의 job이 해당 게시판의 profession과 일치하고, is_verified가 true인지 확인
-        return data && data.job === targetProfession && data.is_verified === true;
-
-    } catch (error) {
-        console.error('Permission check failed:', error);
+    // 인증되지 않은 사용자는 접근 불가
+    if (!isCertified || !userJob) {
+        console.log('글쓰기: 인증되지 않은 사용자');
         return false;
     }
+
+    // 직종별 게시판 권한 매핑
+    const boardPermissionMap = {
+        'pt': '물리치료사',
+        'ot': '작업치료사',
+        'rt': '방사선사',
+        'mt': '임상병리사',
+        'dt': '치과기공사',
+        'dh': '치과위생사'
+    };
+
+    // 해당 게시판의 요구 직종 확인
+    const requiredJob = boardPermissionMap[boardType];
+
+    if (!requiredJob) {
+        console.log('글쓰기: 알 수 없는 게시판 타입:', boardType);
+        return false;
+    }
+
+    // 사용자의 직종과 게시판 요구 직종 비교
+    const hasPermission = userJob === requiredJob;
+
+    console.log('글쓰기 권한 결과:', {
+        userJob,
+        requiredJob,
+        hasPermission
+    });
+
+    return hasPermission;
 }
 
 // 권한 안내 모달 제어
