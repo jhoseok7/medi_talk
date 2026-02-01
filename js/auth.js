@@ -141,7 +141,9 @@ async function loadUserProfile() {
         if (data) {
             setUserProfession(data.profession);
             setProfessionCertified(true);
-            // 다른 프로필 정보도 저장 가능
+            // 지역과 경력 정보도 저장
+            if (data.region) setUserRegion(data.region);
+            if (data.experience) setUserExperience(data.experience);
         }
     } catch (error) {
         console.error('Profile load error:', error);
@@ -157,6 +159,14 @@ function getCurrentUser() {
 function setUserProfession(profession) {
     userProfession = profession;
     localStorage.setItem('userProfession', profession);
+}
+
+function setUserRegion(region) {
+    localStorage.setItem('userRegion', region);
+}
+
+function setUserExperience(experience) {
+    localStorage.setItem('userExperience', experience);
 }
 
 function setProfessionCertified(certified) {
