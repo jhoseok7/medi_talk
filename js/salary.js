@@ -987,15 +987,35 @@ function loadUserProfile() {
     if (profile) {
         return JSON.parse(profile);
     }
-    // 임시 프로필 (로그인 기능 구현 전)
+
+    // 실제 사용자 정보 우선 사용 (Supabase에서 가져온 정보)
+    const savedProfession = localStorage.getItem('userProfession');
+    const savedExperience = localStorage.getItem('userExperience');
+    const savedProvince = localStorage.getItem('userProvince');
+    const savedCity = localStorage.getItem('userCity');
+
+    // 임시 프로필 (로그인 기능 구현 전 또는 정보가 없을 때)
     return {
-        profession: '의사',
-        province: '서울',
-        city: '강남구',
-        experience: '5년차',
+        profession: savedProfession || '의사',
+        province: savedProvince || '서울',
+        city: savedCity || '강남구',
+        experience: savedExperience || '', // 빈 값이면 사용자가 직접 선택
         salary: null // null이면 연봉 정보 없음 (????원으로 표시)
         // salary: '6000~7000만원' // 테스트용: 연봉 정보 있을 경우
     };
+}
+
+// 사용자 프로필 관련 함수들
+function setUserExperience(experience) {
+    localStorage.setItem('userExperience', experience);
+}
+
+function setUserProvince(province) {
+    localStorage.setItem('userProvince', province);
+}
+
+function setUserCity(city) {
+    localStorage.setItem('userCity', city);
 }
 
 // 시/도 선택 시 시/구 업데이트 (필터)
@@ -1293,7 +1313,7 @@ function openSalaryModal() {
     const profile = loadUserProfile();
     document.getElementById('inputProfession').value = profile.profession || '';
     document.getElementById('inputProvince').value = profile.province || '';
-    // 시/구 업데이트
+    // 시/구 업데이트 및 자동 선택
     if (profile.province && regionData[profile.province]) {
         const citySelect = document.getElementById('inputCity');
         citySelect.innerHTML = '<option value="">선택하세요</option>';
@@ -1303,7 +1323,10 @@ function openSalaryModal() {
             option.textContent = city;
             citySelect.appendChild(option);
         });
-        document.getElementById('inputCity').value = profile.city || '';
+        // 저장된 시/구가 있으면 자동 선택
+        if (profile.city) {
+            document.getElementById('inputCity').value = profile.city;
+        }
     }
     document.getElementById('inputExperience').value = profile.experience || '';
 
@@ -1348,6 +1371,41 @@ function bindModalEvents() {
     if (modal) {
         modal.removeEventListener('click', handleModalBackgroundClick);
         modal.addEventListener('click', handleModalBackgroundClick);
+    }
+
+    // 프로필 정보 자동 저장 (사용자가 선택할 때마다 저장)
+    const inputProfession = document.getElementById('inputProfession');
+    if (inputProfession) {
+        inputProfession.addEventListener('change', function() {
+            localStorage.setItem('userProfession', this.value);
+        });
+    }
+
+    const inputExperience = document.getElementById('inputExperience');
+    if (inputExperience) {
+        inputExperience.addEventListener('change', function() {
+            setUserExperience(this.value);
+        });
+    }
+
+    const inputProvince = document.getElementById('inputProvince');
+    if (inputProvince) {
+        inputProvince.addEventListener('change', function() {
+            setUserProvince(this.value);
+            // 시/구도 초기화
+            const citySelect = document.getElementById('inputCity');
+            if (citySelect) {
+                citySelect.innerHTML = '<option value="">선택하세요</option>';
+                localStorage.removeItem('userCity');
+            }
+        });
+    }
+
+    const inputCity = document.getElementById('inputCity');
+    if (inputCity) {
+        inputCity.addEventListener('change', function() {
+            setUserCity(this.value);
+        });
     }
 }
 
