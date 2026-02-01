@@ -1312,22 +1312,7 @@ function openSalaryModal() {
     // 사용자 프로필 자동 입력
     const profile = loadUserProfile();
     document.getElementById('inputProfession').value = profile.profession || '';
-    document.getElementById('inputProvince').value = profile.province || '';
-    // 시/구 업데이트 및 자동 선택
-    if (profile.province && regionData[profile.province]) {
-        const citySelect = document.getElementById('inputCity');
-        citySelect.innerHTML = '<option value="">선택하세요</option>';
-        regionData[profile.province].forEach(city => {
-            const option = document.createElement('option');
-            option.value = city;
-            option.textContent = city;
-            citySelect.appendChild(option);
-        });
-        // 저장된 시/구가 있으면 자동 선택
-        if (profile.city) {
-            document.getElementById('inputCity').value = profile.city;
-        }
-    }
+    document.getElementById('inputRegion').value = profile.province || ''; // 지역 필드에 시/도 값 사용
     document.getElementById('inputExperience').value = profile.experience || '';
 
     // 모달 열릴 때 이벤트 리스너 다시 바인딩
@@ -1381,30 +1366,17 @@ function bindModalEvents() {
         });
     }
 
+    const inputRegion = document.getElementById('inputRegion');
+    if (inputRegion) {
+        inputRegion.addEventListener('change', function() {
+            setUserProvince(this.value); // 지역 선택 시 시/도로 저장
+        });
+    }
+
     const inputExperience = document.getElementById('inputExperience');
     if (inputExperience) {
         inputExperience.addEventListener('change', function() {
             setUserExperience(this.value);
-        });
-    }
-
-    const inputProvince = document.getElementById('inputProvince');
-    if (inputProvince) {
-        inputProvince.addEventListener('change', function() {
-            setUserProvince(this.value);
-            // 시/구도 초기화
-            const citySelect = document.getElementById('inputCity');
-            if (citySelect) {
-                citySelect.innerHTML = '<option value="">선택하세요</option>';
-                localStorage.removeItem('userCity');
-            }
-        });
-    }
-
-    const inputCity = document.getElementById('inputCity');
-    if (inputCity) {
-        inputCity.addEventListener('change', function() {
-            setUserCity(this.value);
         });
     }
 }
