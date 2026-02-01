@@ -366,17 +366,10 @@ function scrollBoardTop() {
 // Supabase에서 게시글 로딩
 async function loadPostsFromSupabase() {
     try {
+        // 먼저 posts만 조회
         const { data, error } = await window.supabaseClient
             .from('posts')
-            .select(`
-                *,
-                users (
-                    job,
-                    specialty,
-                    location,
-                    experience
-                )
-            `)
+            .select('*')
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -389,18 +382,16 @@ async function loadPostsFromSupabase() {
             id: post.id,
             title: post.title,
             content: post.content,
-            profession: post.users?.job || '', // job 필드에서 profession으로 매핑
-            specialty: post.users?.specialty || '',
-            location: post.users?.location || '',
-            experience: post.users?.experience || '',
+            profession: '', // 사용자 정보는 별도 조회 필요
+            location: '',
+            experience: '',
             tags: post.tags || [],
             likes: post.likes || 0,
-            comments: post.comments || 0, // comments 칼럼 사용
+            comments: post.comments || 0,
             views: post.views || 0,
             createdAt: post.created_at,
-            date: post.created_at, // 호환성 위해
-            // 새로 추가된 칼럼들은 post 객체에 자동으로 포함됨
-            ...post // 추가된 칼럼들을 모두 포함
+            date: post.created_at,
+            ...post
         }));
     } catch (error) {
         console.error('Failed to load posts from Supabase:', error);
@@ -446,34 +437,7 @@ function createPostRow(post, idx, totalCount) {
 }
 
 // 실시간 키워드 렌더링
-function renderTrendingKeywords() {
-    // DOM이 완전히 로드되었는지 확인
-    if (document.readyState !== 'complete' && document.readyState !== 'interactive') {
-        console.log('DOM not ready, skipping renderTrendingKeywords');
-        return;
-    }
 
-    const keywords = ['야간근무', '연봉협상', '이직', '국시준비', '환자응대', '개원', '체력관리', '스트레스'];
-    const container = document.getElementById('trendingKeywords');
-
-    if (!container) {
-        console.warn('trendingKeywords container not found, retrying in 100ms');
-        setTimeout(renderTrendingKeywords, 100);
-        return;
-    }
-
-    try {
-        container.innerHTML = keywords.map((keyword, index) => `
-            <div class="keyword-item">
-                <span class="keyword-rank">${index + 1}</span>
-                <span class="keyword-text">${keyword}</span>
-            </div>
-        `).join('');
-        console.log('renderTrendingKeywords completed successfully');
-    } catch (error) {
-        console.error('Error in renderTrendingKeywords:', error);
-    }
-}
 
 // 초기화
 
@@ -502,7 +466,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     currentTab = 'all';
     currentPage = 1;
     renderBoardPosts();
-    renderTrendingKeywords();
 
     // auth.js가 로드될 때까지 기다린 후 버튼 업데이트
     await waitForAuthLoad();
