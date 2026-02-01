@@ -2,28 +2,54 @@
 async function updateWriteButton() {
     const btn = document.getElementById('btnWriteBoard');
     if (!btn) return;
-    // 자유게시판만 로그인 여부로 제어
+
+    console.log('글쓰기 버튼 업데이트:', { currentTab, isLoggedIn: isLoggedIn() });
+
+    // 자유게시판: 로그인만 하면 누구나 글쓰기 가능
     if (currentTab === 'all') {
-        btn.disabled = false;
-        btn.onclick = function(e) {
-            if (!isLoggedIn()) {
+        if (isLoggedIn()) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.onclick = function(e) {
+                e.preventDefault();
+                window.location.href = 'write.html';
+            };
+            console.log('자유게시판: 글쓰기 버튼 활성화');
+        } else {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = function(e) {
                 e.preventDefault();
                 showLoginRequiredModal();
-                return;
-            }
-            window.location.href = 'write.html';
-        };
+            };
+            console.log('자유게시판: 로그인 필요');
+        }
     } else {
-        btn.disabled = false;
-        btn.onclick = async function(e) {
-            const hasPermission = await hasBoardInteractionPermission(currentTab);
-            if (!hasPermission) {
+        // 직종별 게시판: 해당 직종 인증된 사용자만 글쓰기 가능
+        const hasPermission = await hasBoardInteractionPermission(currentTab);
+        console.log('직종별 게시판 권한 체크 결과:', hasPermission);
+
+        if (hasPermission) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.onclick = function(e) {
+                e.preventDefault();
+                window.location.href = 'write.html';
+            };
+            console.log('직종별 게시판: 글쓰기 버튼 활성화');
+        } else {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = function(e) {
                 e.preventDefault();
                 showPermissionModal();
-                return;
-            }
-            window.location.href = 'write.html';
-        };
+            };
+            console.log('직종별 게시판: 권한 없음');
+        }
     }
 }
 
@@ -297,12 +323,13 @@ function renderBoardPosts() {
 }
 // 게시판 탭 전환 (공통 구조, 데이터만 변경)
 document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', async function() {
         const tab = this.dataset.tab;
         const isAlreadyActive = this.classList.contains('active');
         if (currentTab === tab && isAlreadyActive) {
             currentPage = 1;
             renderBoardPosts();
+            await waitForAuthLoad();
             updateWriteButton();
             scrollBoardTop();
             return;
@@ -312,6 +339,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         renderBoardPosts();
+        await waitForAuthLoad();
         updateWriteButton();
         scrollBoardTop();
     });
@@ -451,8 +479,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     currentTab = 'all';
     currentPage = 1;
     renderBoardPosts();
-    updateWriteButton();
     renderTrendingKeywords();
+
+    // auth.js가 로드될 때까지 기다린 후 버튼 업데이트
+    await waitForAuthLoad();
+    updateWriteButton();
 
     // robust 이벤트 위임
     document.body.addEventListener('click', function(e) {
@@ -467,6 +498,26 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error('JS Error:', event.message, event.filename, event.lineno);
     });
 });
+
+// auth.js 로드 대기 함수
+function waitForAuthLoad() {
+    return new Promise((resolve) => {
+        const checkAuth = () => {
+            if (typeof isLoggedIn === 'function' &&
+                typeof getUserProfession === 'function' &&
+                typeof isProfessionCertified === 'function') {
+                console.log('auth.js functions loaded');
+                resolve();
+            } else {
+                setTimeout(checkAuth, 100);
+            }
+        };
+        checkAuth();
+    });
+}
+
+// window 객체에 함수 노출 (auth.js에서 호출용)
+window.updateBoardWriteButton = updateWriteButton;
 
 // 게시판 접근 권한 체크 함수
 async function hasBoardInteractionPermission(boardType) {

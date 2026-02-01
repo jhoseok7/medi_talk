@@ -144,6 +144,11 @@ async function loadUserProfile() {
             // 지역과 경력 정보도 저장
             if (data.region) setUserRegion(data.region);
             if (data.experience) setUserExperience(data.experience);
+
+            // 프로필 로드 완료 후 board.js 버튼 업데이트
+            if (window.updateBoardWriteButton) {
+                window.updateBoardWriteButton();
+            }
         }
     } catch (error) {
         console.error('Profile load error:', error);
