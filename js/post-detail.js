@@ -88,7 +88,7 @@ async function loadPostData() {
             .select(`
                 *,
                 users (
-                    profession,
+                    job,
                     specialty,
                     location,
                     experience
@@ -109,7 +109,7 @@ async function loadPostData() {
             id: postData.id,
             title: postData.title,
             content: postData.content,
-            profession: postData.users?.profession || '',
+            profession: postData.users?.job || '', // job 필드에서 profession으로 매핑
             specialty: postData.users?.specialty || '',
             location: postData.users?.location || '',
             experience: postData.users?.experience || '',
@@ -128,7 +128,7 @@ async function loadPostData() {
             .select(`
                 *,
                 users (
-                    profession,
+                    job,
                     specialty,
                     location,
                     experience
@@ -147,7 +147,7 @@ async function loadPostData() {
                 content: comment.content,
                 createdAt: comment.created_at,
                 author: {
-                    profession: comment.users?.profession || '',
+                    profession: comment.users?.job || '', // job 필드에서 profession으로 매핑
                     specialty: comment.users?.specialty || '',
                     location: comment.users?.location || '',
                     experience: comment.users?.experience || ''

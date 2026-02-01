@@ -365,7 +365,7 @@ async function loadPostsFromSupabase() {
             .select(`
                 *,
                 users (
-                    profession,
+                    job,
                     specialty,
                     location,
                     experience
@@ -383,7 +383,7 @@ async function loadPostsFromSupabase() {
             id: post.id,
             title: post.title,
             content: post.content,
-            profession: post.users?.profession || '',
+            profession: post.users?.job || '', // job 필드에서 profession으로 매핑
             specialty: post.users?.specialty || '',
             location: post.users?.location || '',
             experience: post.users?.experience || '',
@@ -443,7 +443,12 @@ function createPostRow(post, idx, totalCount) {
 function renderTrendingKeywords() {
     const keywords = ['야간근무', '연봉협상', '이직', '국시준비', '환자응대', '개원', '체력관리', '스트레스'];
     const container = document.getElementById('trendingKeywords');
-    
+
+    if (!container) {
+        console.warn('trendingKeywords container not found');
+        return;
+    }
+
     container.innerHTML = keywords.map((keyword, index) => `
         <div class="keyword-item">
             <span class="keyword-rank">${index + 1}</span>
