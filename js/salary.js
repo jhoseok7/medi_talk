@@ -1320,6 +1320,7 @@ if (btnParticipate) {
 
 // 모달 닫기
 function closeModal() {
+    console.log('closeModal called');
     const modal = document.getElementById('salaryModal');
     modal.classList.remove('show');
     document.body.style.overflow = '';
@@ -1328,7 +1329,10 @@ function closeModal() {
 // 모달 닫기(X) 버튼
 const btnCloseModal = document.getElementById('btnCloseModal');
 if (btnCloseModal) {
+    console.log('btnCloseModal found, adding event listener');
     btnCloseModal.addEventListener('click', closeModal);
+} else {
+    console.log('btnCloseModal not found');
 }
 // 취소 버튼
 function bindCancelSalaryButton() {
