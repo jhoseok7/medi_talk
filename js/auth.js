@@ -9,9 +9,15 @@
 
     // Supabase Auth 통합
     let currentUser = null;
+    let userProfession = null;
+    let professionCertified = false;
 
 // Supabase 세션 초기화 (클라이언트 준비 대기)
 async function initAuth() {
+    // 로컬 스토리지에서 프로필 정보 불러오기
+    userProfession = localStorage.getItem('userProfession');
+    professionCertified = localStorage.getItem('professionCertified') === 'true';
+
     // Supabase 클라이언트가 준비될 때까지 대기
     const waitForSupabase = () => {
         return new Promise((resolve) => {
@@ -145,6 +151,25 @@ async function loadUserProfile() {
 // 현재 사용자 정보 반환
 function getCurrentUser() {
     return currentUser;
+}
+
+// 사용자 프로필 관련 함수들
+function setUserProfession(profession) {
+    userProfession = profession;
+    localStorage.setItem('userProfession', profession);
+}
+
+function setProfessionCertified(certified) {
+    professionCertified = certified;
+    localStorage.setItem('professionCertified', certified ? 'true' : 'false');
+}
+
+function getUserProfession() {
+    return userProfession || localStorage.getItem('userProfession');
+}
+
+function isProfessionCertified() {
+    return professionCertified || localStorage.getItem('professionCertified') === 'true';
 }
 
 // 로그인 함수
