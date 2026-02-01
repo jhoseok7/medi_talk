@@ -1,5 +1,5 @@
 // 글쓰기 버튼 권한 처리
-function updateWriteButton() {
+async function updateWriteButton() {
     const btn = document.getElementById('btnWriteBoard');
     if (!btn) return;
     // 자유게시판만 로그인 여부로 제어
@@ -15,8 +15,9 @@ function updateWriteButton() {
         };
     } else {
         btn.disabled = false;
-        btn.onclick = function(e) {
-            if (!hasBoardInteractionPermission(currentTab)) {
+        btn.onclick = async function(e) {
+            const hasPermission = await hasBoardInteractionPermission(currentTab);
+            if (!hasPermission) {
                 e.preventDefault();
                 showPermissionModal();
                 return;
@@ -53,16 +54,47 @@ function showLoginRequiredModal() {
     }
 }
 // 권한 체크 유틸리티 (직종별 게시판 상호작용)
-function hasBoardInteractionPermission(boardType) {
+async function hasBoardInteractionPermission(boardType) {
     if (boardType === 'all' || boardType === 'free') return true; // 자유게시판은 항상 허용
-    if (!window.isLoggedIn || !window.getUserProfession || !window.isProfessionCertified) return false;
+
+    if (!window.isLoggedIn || !window.getCurrentUser) return false;
     if (!isLoggedIn()) return false;
-    if (!isProfessionCertified()) return false;
-    const userProf = getUserProfession();
-    const professionMap = {
-        pt: '물리치료사', ot: '작업치료사', rt: '방사선사', mt: '임상병리사', dt: '치과기공사', dh: '치과위생사'
-    };
-    return userProf === professionMap[boardType];
+
+    const currentUser = getCurrentUser();
+    if (!currentUser) return false;
+
+    try {
+        // Supabase에서 해당 사용자의 직종별 인증 상태 확인
+        const professionMap = {
+            pt: '물리치료사',
+            ot: '작업치료사',
+            rt: '방사선사',
+            mt: '임상병리사',
+            dt: '치과기공사',
+            dh: '치과위생사'
+        };
+
+        const targetProfession = professionMap[boardType];
+        if (!targetProfession) return false;
+
+        const { data, error } = await window.supabaseClient
+            .from('job')
+            .select('is_verified')
+            .eq('email', currentUser.email)
+            .eq('profession', targetProfession)
+            .single();
+
+        if (error) {
+            console.error('Permission check error:', error);
+            return false;
+        }
+
+        return data && data.is_verified === true;
+
+    } catch (error) {
+        console.error('Permission check failed:', error);
+        return false;
+    }
 }
 
 // 권한 안내 모달 제어

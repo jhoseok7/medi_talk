@@ -1,14 +1,45 @@
 // 권한 체크 유틸리티 (직종별 게시판 상호작용)
-function hasBoardInteractionPermission(boardType) {
-    if (boardType === 'all' || boardType === 'free') return true;
-    if (!window.isLoggedIn || !window.getUserProfession || !window.isProfessionCertified) return false;
+async function hasBoardInteractionPermission(boardType) {
+    if (boardType === 'all' || boardType === 'free') return true; // 자유게시판은 항상 허용
+
+    if (!window.isLoggedIn || !window.getCurrentUser) return false;
     if (!isLoggedIn()) return false;
-    if (!isProfessionCertified()) return false;
-    const userProf = getUserProfession();
-    const professionMap = {
-        pt: '물리치료사', ot: '작업치료사', rt: '방사선사', mt: '임상병리사', dt: '치과기공사', dh: '치과위생사'
-    };
-    return userProf === professionMap[boardType];
+
+    const currentUser = getCurrentUser();
+    if (!currentUser) return false;
+
+    try {
+        // Supabase에서 해당 사용자의 직종별 인증 상태 확인
+        const professionMap = {
+            pt: '물리치료사',
+            ot: '작업치료사',
+            rt: '방사선사',
+            mt: '임상병리사',
+            dt: '치과기공사',
+            dh: '치과위생사'
+        };
+
+        const targetProfession = professionMap[boardType];
+        if (!targetProfession) return false;
+
+        const { data, error } = await window.supabaseClient
+            .from('job')
+            .select('is_verified')
+            .eq('email', currentUser.email)
+            .eq('profession', targetProfession)
+            .single();
+
+        if (error) {
+            console.error('Permission check error:', error);
+            return false;
+        }
+
+        return data && data.is_verified === true;
+
+    } catch (error) {
+        console.error('Permission check failed:', error);
+        return false;
+    }
 }
 
 // 권한 안내 모달 제어
@@ -59,11 +90,12 @@ function saveLocalPost(post) {
 
 // 게시글 작성
 
-document.getElementById('btnSubmitPost').addEventListener('click', (event) => {
+document.getElementById('btnSubmitPost').addEventListener('click', async (event) => {
     event.preventDefault && event.preventDefault();
     const board = document.getElementById('boardSelect').value;
     // 권한 체크 (자유게시판은 항상 허용)
-    if (!hasBoardInteractionPermission(board)) {
+    const hasPermission = await hasBoardInteractionPermission(board);
+    if (!hasPermission) {
         showPermissionModal();
         return;
     }
