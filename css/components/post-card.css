@@ -199,4 +199,21 @@
         bottom: 20px;
         right: 20px;
     }
+
+    /* 추가 모바일 최적화 */
+    .post-card {
+        padding: 12px;
+    }
+
+    .post-title {
+        font-size: 14px;
+    }
+
+    .post-content {
+        font-size: 13px;
+    }
+
+    .post-meta {
+        font-size: 12px;
+    }
 }

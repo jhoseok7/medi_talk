@@ -107,6 +107,40 @@
         .skip-link a:hover {
             text-decoration: underline;
         }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .onboarding-container {
+                max-width: 90%;
+                margin: 40px auto 0 auto;
+                padding: 24px 20px;
+            }
+            .onboarding-title {
+                font-size: 1.5rem;
+            }
+            .onboarding-subtitle {
+                font-size: 0.9rem;
+                margin-bottom: 24px;
+            }
+            .onboarding-form {
+                gap: 16px;
+            }
+            .form-group select,
+            .form-group input {
+                font-size: 0.9rem;
+                padding: 10px 12px;
+            }
+            .onboarding-btn {
+                font-size: 1rem;
+                padding: 12px 0;
+            }
+            .welcome-message {
+                padding: 16px;
+            }
+            .welcome-message i {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>

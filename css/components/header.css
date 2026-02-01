@@ -195,4 +195,18 @@
     .btn-logout {
         padding: 8px 12px;
     }
+
+    /* 추가 모바일 최적화 */
+    .header-content {
+        padding: 8px 16px;
+    }
+
+    .logo span {
+        font-size: 18px;
+    }
+
+    .search-box input {
+        font-size: 14px;
+        padding: 8px 12px 8px 35px;
+    }
 }
