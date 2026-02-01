@@ -3,6 +3,12 @@ async function updateWriteButton() {
     const btn = document.getElementById('btnWriteBoard');
     if (!btn) return;
 
+    // auth.js 함수들이 로드되었는지 확인
+    if (typeof isLoggedIn !== 'function') {
+        console.log('auth.js not loaded yet, skipping button update');
+        return;
+    }
+
     console.log('글쓰기 버튼 업데이트:', { currentTab, isLoggedIn: isLoggedIn() });
 
     // 자유게시판: 로그인만 하면 누구나 글쓰기 가능
@@ -441,20 +447,32 @@ function createPostRow(post, idx, totalCount) {
 
 // 실시간 키워드 렌더링
 function renderTrendingKeywords() {
+    // DOM이 완전히 로드되었는지 확인
+    if (document.readyState !== 'complete' && document.readyState !== 'interactive') {
+        console.log('DOM not ready, skipping renderTrendingKeywords');
+        return;
+    }
+
     const keywords = ['야간근무', '연봉협상', '이직', '국시준비', '환자응대', '개원', '체력관리', '스트레스'];
     const container = document.getElementById('trendingKeywords');
 
     if (!container) {
-        console.warn('trendingKeywords container not found');
+        console.warn('trendingKeywords container not found, retrying in 100ms');
+        setTimeout(renderTrendingKeywords, 100);
         return;
     }
 
-    container.innerHTML = keywords.map((keyword, index) => `
-        <div class="keyword-item">
-            <span class="keyword-rank">${index + 1}</span>
-            <span class="keyword-text">${keyword}</span>
-        </div>
-    `).join('');
+    try {
+        container.innerHTML = keywords.map((keyword, index) => `
+            <div class="keyword-item">
+                <span class="keyword-rank">${index + 1}</span>
+                <span class="keyword-text">${keyword}</span>
+            </div>
+        `).join('');
+        console.log('renderTrendingKeywords completed successfully');
+    } catch (error) {
+        console.error('Error in renderTrendingKeywords:', error);
+    }
 }
 
 // 초기화
