@@ -139,7 +139,7 @@ async function loadUserProfile() {
         }
 
         if (data) {
-            setUserProfession(data.profession);
+            setUserProfession(data.job); // job 필드에서 profession 정보 가져옴
             setProfessionCertified(true);
             // 지역과 경력 정보도 저장
             if (data.region) setUserRegion(data.region);

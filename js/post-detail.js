@@ -24,7 +24,7 @@ async function hasBoardInteractionPermission(boardType) {
 
         const { data, error } = await window.supabaseClient
             .from('users')
-            .select('profession, is_verified')
+            .select('job, is_verified')  // job 필드 사용
             .eq('email', currentUser.email)
             .single();
 
@@ -33,8 +33,8 @@ async function hasBoardInteractionPermission(boardType) {
             return false;
         }
 
-        // 사용자의 profession이 해당 게시판의 profession과 일치하고, is_verified가 true인지 확인
-        return data && data.profession === targetProfession && data.is_verified === true;
+        // 사용자의 job이 해당 게시판의 profession과 일치하고, is_verified가 true인지 확인
+        return data && data.job === targetProfession && data.is_verified === true;
 
     } catch (error) {
         console.error('Permission check failed:', error);
