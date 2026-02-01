@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글쓰기 - 메디톡</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/header.css">
+    <link rel="stylesheet" href="css/components/write.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 권한 안내 모달 -->
+    <div id="permissionModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="modal-message">해당 기능은 해당 직종 인증자만 사용할 수 있습니다.</span>
+            <button class="btn-certify" id="goCertifyBtn">직종 인증하기</button>
+            <button class="btn-close-modal" id="closePermissionModal">닫기</button>
+        </div>
+    </div>
+    <style>
+    .modal {
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.35);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 9999;
+    }
+    .modal-content {
+        background: #fff; border-radius: 12px; padding: 32px 28px 24px 28px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.13);
+        min-width: 320px; max-width: 90vw;
+        display: flex; flex-direction: column; align-items: center;
+    }
+    .modal-message { font-size: 1.13rem; color: #222; margin-bottom: 24px; text-align: center; }
+    .btn-certify {
+        background: #00b8a9; color: #fff; border: none; border-radius: 6px;
+        font-size: 1.08rem; font-weight: 600; padding: 10px 24px; margin-bottom: 10px; cursor: pointer;
+    }
+    .btn-certify:hover { background: #008e7e; }
+    .btn-close-modal {
+        background: #e2e8f0; color: #222; border: none; border-radius: 6px;
+        font-size: 1rem; padding: 8px 18px; cursor: pointer;
+    }
+    .btn-close-modal:hover { background: #cbd5e1; }
+    </style>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-container">
+            <a href="board.html" class="logo">
+                <i class="fas fa-user-md"></i>
+                <span>메디톡</span>
+            </a>
+            <nav class="header-nav">
+                <button class="nav-btn" data-board="free">
+                    <i class="fas fa-comments"></i>
+                    자유게시판
+                </button>
+                <button class="nav-btn" onclick="location.href='salary.html'">
+                    <i class="fas fa-coins"></i>
+                    연봉정보
+                </button>
+                <button class="nav-btn" data-board="game">
+                    <i class="fas fa-gamepad"></i>
+                    게임
+                </button>
+            </nav>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="검색어를 입력하세요" id="searchInput">
+            </div>
+            <div class="header-actions">
+                <button class="btn-login">로그인</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-container">
+        <div class="write-wrapper">
+            <!-- 뒤로가기 버튼 -->
+            <button class="btn-back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+                목록으로
+            </button>
+
+            <!-- 글쓰기 전체(타이틀+내정보+폼) 통합 -->
+            <div class="write-mainbox">
+                <div style="position: relative;">
+                    <h1 class="write-title">새 게시글 작성</h1>
+                    <div class="user-info-mini user-info-absolute" id="userInfoBox">
+                        <i class="fas fa-user-circle"></i>
+                        <!-- JS로 사용자 정보 출력 -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>게시판 선택</label>
+                    <select id="boardSelect" class="form-input">
+                        <option value="free">자유게시판</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>제목</label>
+                    <input type="text" id="postTitle" class="form-input" placeholder="제목을 입력하세요" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>내용</label>
+                    <textarea id="postContent" class="form-textarea" placeholder="내용을 입력하세요" rows="15"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>태그 (쉼표로 구분)</label>
+                    <input type="text" id="postTags" class="form-input" placeholder="예: 연봉, 이직, 근무환경">
+                </div>
+                <div class="form-actions">
+                    <button class="btn-cancel" onclick="history.back()">취소</button>
+                    <button type="button" class="btn-submit" id="btnSubmitPost">작성하기</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/write.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+    // 로그인 가드: 비로그인 시 로그인 페이지로 리다이렉트
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.isLoggedIn || !isLoggedIn()) {
+            window.location.href = 'login.html?next=' + encodeURIComponent(window.location.pathname);
+        }
+    });
+    </script>
+</body>
+<script src="js/supabaseClient.cdn.js"></script>
+</html>

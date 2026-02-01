@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 메디톡</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-container {
+            max-width: 360px;
+            margin: 80px auto 0 auto;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 32px 28px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00b8a9;
+            margin-bottom: 24px;
+        }
+        .login-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .login-form input {
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .login-form button {
+            padding: 10px 0;
+            background: #00b8a9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .login-form button:hover {
+            background: #008e7e;
+        }
+        .social-login {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .btn-google-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 12px;
+            background: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-google-login:hover {
+            background: #f8f9fa;
+        }
+        .btn-google-login i {
+            color: #4285f4;
+        }
+        .login-extra {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .signup-link {
+            font-size: 0.97rem;
+            color: #64748b;
+        }
+        .signup-link a {
+            color: #00b8a9;
+            text-decoration: underline;
+            margin-left: 4px;
+        }
+        .find-link {
+            font-size: 0.97rem;
+            color: #64748b;
+            margin-top: 0;
+        }
+        .find-link-highlight {
+            color: #00b8a9;
+            text-decoration: underline;
+            margin: 0 2px;
+        }
+        .login-desc-small {
+            font-size: 0.76rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 14px;
+            line-height: 1.6;
+        }
+        .signup-link,
+        .find-link {
+            font-size: 0.89rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-user-md"></i>
+                <span>메디톡</span>
+            </a>
+        </div>
+    </header>
+    <main>
+        <div class="login-container">
+            <div class="login-title">로그인</div>
+            <form class="login-form">
+                <input type="text" placeholder="아이디" required>
+                <input type="password" placeholder="비밀번호" required>
+                <button type="submit">로그인</button>
+            </form>
+            <div class="social-login">
+                <button type="button" class="btn-google-login" id="googleLoginBtn">
+                    <i class="fab fa-google"></i>
+                    Google로 로그인
+                </button>
+            </div>
+            <div class="login-extra">
+                <div class="signup-link">아직 계정이 없으신가요? <a href="signup.html">회원가입</a></div>
+                <div class="find-link"> <span class="find-link-highlight">아이디</span>·<span class="find-link-highlight">비밀번호</span>를 잊으셨나요?</div>
+                <div class="login-desc-small">
+                    익명 기반의 의료인 커뮤니티<br>
+                    실명·닉네임 없이 이용할 수 있어요.
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/auth.js"></script>
+    <script>
+        // Supabase 로그인 폼 제출
+        const form = document.querySelector('.login-form');
+        const emailInput = form.querySelector('input[type="text"]');
+        const passwordInput = form.querySelector('input[type="password"]');
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                alert('이메일과 비밀번호를 입력해주세요.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '로그인 중...';
+
+            const result = await window.signIn(email, password);
+
+            if (result.success) {
+                const params = new URLSearchParams(window.location.search);
+                const next = params.get('next');
+                if (next) {
+                    window.location.replace(next);
+                } else {
+                    window.location.replace('index.html');
+                }
+            } else {
+                alert('로그인 실패: ' + result.error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = '로그인';
+            }
+        });
+
+        // Google 로그인 버튼
+        document.getElementById('googleLoginBtn').addEventListener('click', async function() {
+            const result = await window.signInWithGoogle();
+            if (!result.success) {
+                alert('Google 로그인 실패: ' + result.error);
+            }
+            // 성공 시 리다이렉트됨
+        });
+    </script>
+    <script src="js/supabaseClient.cdn.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

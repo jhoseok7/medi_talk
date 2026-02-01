@@ -1,0 +1,1748 @@
+/* 연봉 정보 페이지 */
+.main-container {
+    max-width: 1200px;
+    margin: 90px auto 40px;
+    padding: 0 20px;
+}
+
+.salary-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* 페이지 헤더 */
+.page-header {
+    margin-bottom: 10px;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.page-title i {
+    color: var(--primary-color);
+}
+
+.page-desc {
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+/* 연봉 분포 섹션 */
+.distribution-section {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    margin-bottom: 28px;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.section-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.simple-chart-container {
+    height: 280px;
+    margin-top: 20px;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.legend-bar {
+    width: 20px;
+    height: 12px;
+    background: rgba(0, 184, 169, 0.3);
+    border: 2px solid rgba(0, 184, 169, 0.8);
+    border-radius: 2px;
+}
+
+.legend-line {
+    width: 24px;
+    height: 3px;
+    background: #ef4444;
+    border-radius: 2px;
+}
+
+/* 지역별 연봉 지도 섹션 */
+.region-salary-section {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.region-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.region-filter-item {
+    flex: 1;
+}
+
+.region-filter-item label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.region-filter-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.region-filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.1);
+}
+
+.region-filter-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-region-apply {
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-region-apply:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-region-reset {
+    padding: 10px 20px;
+    background: var(--white);
+    color: var(--text-secondary);
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-region-reset:hover {
+    background: #f3f4f6;
+    color: var(--text-primary);
+    border-color: #d1d5db;
+}
+
+.region-map-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.region-item {
+    background: var(--white);
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.region-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.region-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.region-salary {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.region-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.region-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.legend-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.legend-gradient {
+    width: 200px;
+    height: 16px;
+    border-radius: 8px;
+    background: linear-gradient(to right, 
+        rgba(0, 184, 169, 0.2),
+        rgba(0, 184, 169, 0.4),
+        rgba(0, 184, 169, 0.6),
+        rgba(0, 184, 169, 0.8),
+        rgba(0, 184, 169, 1)
+    );
+}
+
+/* 내 연봉 정보 카드 그리드 */
+.salary-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* 내 연봉 정보 카드 */
+.my-salary-card {
+    background: linear-gradient(135deg, #00b8a9 0%, #00d4c0 100%);
+    padding: 32px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    color: var(--white);
+    box-shadow: 0 8px 24px rgba(0, 184, 169, 0.2);
+}
+
+.card-icon {
+    font-size: 48px;
+    opacity: 0.9;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.card-salary {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.card-percentile {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.btn-participate {
+    padding: 14px 28px;
+    background: var(--white);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.btn-participate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 시간당 수입 카드 */
+.time-salary-card {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.time-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.time-card-title i {
+    color: var(--primary-color);
+}
+
+.time-salary-display {
+    text-align: center;
+    padding: 20px 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.time-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    background: var(--white);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.time-nav-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: var(--white);
+    transform: scale(1.1);
+}
+
+.time-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.time-unit {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.time-amount {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-color);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out 0.2s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.time-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.indicator.active {
+    background: var(--primary-color);
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* 필터 섹션 */
+.filter-section {
+    background: var(--white);
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.filter-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-title i {
+    color: var(--primary-color);
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.filter-item label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.1);
+}
+
+.btn-reset {
+    width: 100%;
+    height: 42px;
+    margin-top: 24px;
+    padding: 10px 14px;
+    background: #f3f4f6;
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: #e5e7eb;
+    color: var(--text-primary);
+}
+
+/* 통계 카드 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(0, 184, 169, 0.1) 0%, rgba(0, 212, 192, 0.15) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* 데이터 섹션 */
+.data-section {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.data-table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background: #f9fafb;
+}
+
+.data-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    border-top: 1px solid #f3f4f6;
+}
+
+.data-table tbody tr {
+    transition: background 0.2s;
+}
+
+.data-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.no-data {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px !important;
+}
+
+/* 페이지 헤더 */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.page-title i {
+    color: var(--primary-color);
+}
+
+.page-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.btn-add-salary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add-salary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* 통계 카드 */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-card-cta {
+    background: linear-gradient(135deg, #00b8a9 0%, #00d4c0 100%);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-cta::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+}
+
+.stat-card-cta:hover::before {
+    left: 100%;
+}
+
+.stat-card-cta:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 184, 169, 0.4);
+}
+
+.stat-icon-cta {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.stat-card-cta .stat-label,
+.stat-card-cta .stat-value {
+    color: var(--white);
+}
+
+.stat-value-cta {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--white);
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+/* 필터 섹션 */
+.filter-section {
+    background: var(--white);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.filter-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-title i {
+    color: var(--primary-color);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.location-filter-group {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.location-filter-group .filter-select {
+    flex: 1;
+}
+
+.filter-select {
+    min-width: 150px;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn-reset-filter {
+    padding: 10px 20px;
+    background: var(--secondary-color);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-reset-filter:hover {
+    background: var(--border-color);
+}
+
+/* 테이블 섹션 */
+.salary-table-section {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+/* 키 메트릭 카드 */
+.key-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.key-metric-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8f5f4 100%);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s;
+}
+
+.key-metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 184, 169, 0.2);
+}
+
+.key-metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.key-metric-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.key-metric-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* 연봉 분포 차트 */
+.salary-chart {
+    background: var(--white);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.chart-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-title i {
+    color: var(--primary-color);
+}
+
+.chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 200px;
+    gap: 8px;
+    padding: 0 10px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.chart-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.bar-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.bar {
+    width: 100%;
+    max-width: 60px;
+    background: linear-gradient(180deg, var(--primary-color), var(--primary-dark));
+    border-radius: 6px 6px 0 0;
+    transition: all 0.3s;
+    position: relative;
+    box-shadow: 0 -2px 8px rgba(0, 184, 169, 0.3);
+}
+
+.bar-empty {
+    width: 100%;
+    max-width: 60px;
+    height: 2px;
+    background: var(--border-color);
+    opacity: 0.3;
+}
+
+.bar.national-bar {
+    background: linear-gradient(180deg, #6c757d, #495057);
+    box-shadow: 0 -2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.bar:hover {
+    background: linear-gradient(180deg, var(--primary-dark), var(--primary-color));
+    box-shadow: 0 -4px 12px rgba(0, 184, 169, 0.5);
+    transform: translateY(-4px);
+}
+
+.bar.national-bar:hover {
+    background: linear-gradient(180deg, #495057, #6c757d);
+    box-shadow: 0 -4px 12px rgba(108, 117, 125, 0.5);
+}
+
+.bar-count {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.bar-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.3;
+    max-width: 100%;
+}
+
+.chart-empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+}
+
+.salary-table {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--secondary-color);
+}
+
+th {
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+td {
+    padding: 14px;
+    font-size: 14px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+tr:hover {
+    background: var(--secondary-color);
+}
+
+.progress-bar-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.percentage {
+    font-weight: 600;
+    color: var(--primary-color);
+    min-width: 45px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 48px;
+    color: var(--border-color);
+    margin-bottom: 16px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+/* 모달 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-close:hover {
+    background: var(--secondary-color);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.info-notice {
+    background: #e8f5f4;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.info-notice i {
+    color: var(--primary-color);
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.info-notice p {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.label-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+}
+
+.label-required {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ef4444;
+    background: #fee2e2;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .simple-chart-container {
+        height: 220px;
+    }
+    
+    .section-title {
+        font-size: 20px;
+    }
+    
+    .section-desc {
+        font-size: 13px;
+    }
+    
+    .distribution-section {
+        padding: 20px;
+    }
+    
+    .page-title {
+        font-size: 24px;
+    }
+    
+    .salary-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .my-salary-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+    
+    .card-icon {
+        font-size: 40px;
+    }
+    
+    .card-salary {
+        font-size: 28px;
+    }
+    
+    .time-salary-card {
+        padding: 24px;
+    }
+    
+    .time-amount {
+        font-size: 28px;
+    }
+    
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .data-section {
+        padding: 20px;
+    }
+    
+    .region-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .region-filter-item {
+        width: 100%;
+    }
+    
+    .region-filter-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-region-apply,
+    .btn-region-reset {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .region-map-container {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .region-item {
+        padding: 12px;
+    }
+    
+    .region-salary {
+        font-size: 18px;
+    }
+    
+    .legend-gradient {
+        width: 150px;
+    }
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: #f0fffe;
+}
+
+.form-input:disabled {
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 30px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-cancel,
+.btn-submit {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel {
+    background: var(--white);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-cancel:hover {
+    background: var(--secondary-color);
+}
+
+.btn-submit {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+.btn-submit:hover {
+    background: var(--primary-dark);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .main-container {
+        margin-top: 80px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-add-salary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-controls {
+        flex-direction: column;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .salary-table-section {
+        padding: 20px;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+}
+
+/* 연봉 계산기 섹션 */
+.calculator-section {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 실수령액 환산기 섹션 */
+.reverse-calculator-section {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 커뮤니티 섹션 */
+.community-section {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 계산기와 커뮤니티를 좌우로 배치 */
+.salary-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.salary-wrapper > .community-section {
+    grid-column: 1 / -1;
+}
+
+.salary-wrapper > .calculator-section {
+    grid-column: 1;
+}
+
+.salary-wrapper > .reverse-calculator-section {
+    grid-column: 2;
+}
+
+.salary-wrapper > .page-header,
+.salary-wrapper > .salary-cards-grid,
+.salary-wrapper > .distribution-section,
+.salary-wrapper > .region-salary-section,
+.salary-wrapper > .filter-section,
+.salary-wrapper > .stats-grid {
+    grid-column: 1 / -1;
+}
+
+.calculator-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex: 1;
+}
+
+.calculator-result {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.community-grid {
+    flex: 1;
+}
+
+.calculator-input {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calculator-input label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.calculator-input input {
+    padding: 14px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.calculator-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.1);
+}
+
+.btn-calculate {
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #00a896 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-calculate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 184, 169, 0.3);
+}
+
+.calculator-result {
+    background: #f9fafb;
+    padding: 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.result-item.deduction {
+    opacity: 0.7;
+}
+
+.result-item.total {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.result-label {
+    color: var(--text-primary);
+}
+
+.result-value {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.result-value.highlight {
+    color: var(--primary-color);
+    font-size: 22px;
+}
+
+.result-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 8px 0;
+}
+
+.result-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f0f9ff;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #0369a1;
+    margin-top: 8px;
+}
+
+.result-info i {
+    font-size: 14px;
+}
+
+/* 커뮤니티 섹션 */
+.community-section {
+    background: var(--white);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.community-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.community-card {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.community-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.post-category {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+.post-category.hot {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.post-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.post-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.post-preview {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.post-footer {
+    display: flex;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.post-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.post-stat i {
+    font-size: 12px;
+}
+
+.community-footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.btn-more {
+    padding: 12px 32px;
+    background: white;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-more:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .salary-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .salary-wrapper > .calculator-section,
+    .salary-wrapper > .reverse-calculator-section,
+    .salary-wrapper > .community-section {
+        grid-column: 1;
+    }
+
+    .calculator-container {
+        grid-template-columns: 1fr;
+    }
+
+    .community-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .calculator-section,
+    .reverse-calculator-section,
+    .community-section {
+        padding: 20px;
+    }
+}

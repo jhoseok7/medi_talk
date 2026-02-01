@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연봉 정보 - 메디톡</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/header.css">
+    <link rel="stylesheet" href="css/components/salary.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-user-md"></i>
+                <span>메디톡</span>
+            </a>
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="location.href='board.html'">
+                    <i class="fas fa-comments"></i>
+                    게시판
+                </button>
+                <button class="nav-btn active">
+                    <i class="fas fa-coins"></i>
+                    연봉정보
+                </button>
+            </nav>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="검색어를 입력하세요" id="searchInput">
+            </div>
+            <div class="header-actions">
+                <button class="btn-login">로그인</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-container">
+        <div class="salary-wrapper">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-chart-line"></i>
+                        연봉 정보
+                    </h1>
+                    <p class="page-desc">의료인들의 실제 연봉 데이터를 확인하고 비교해보세요</p>
+                </div>
+            </div>
+
+            <!-- 내 연봉 정보 카드 -->
+            <section class="salary-cards-grid">
+                <div class="my-salary-card" id="mySalaryCard">
+                    <div class="card-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">내 연봉 정보</h3>
+                        <p class="card-salary" id="mySalaryDisplay">????원</p>
+                        <p class="card-percentile" id="myPercentileDisplay">상위 ?%</p>
+                    </div>
+                    <button class="btn-participate" id="btnParticipate">
+                        <i class="fas fa-plus-circle"></i>
+                        연봉 정보 입력
+                    </button>
+                </div>
+
+                <div class="time-salary-card">
+                    <h3 class="time-card-title">
+                        <i class="fas fa-clock"></i>
+                        추정 수입
+                    </h3>
+                    <div class="time-salary-display">
+                        <button class="time-nav-btn prev" id="timePrevBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="time-content">
+                            <div class="time-unit" id="timeUnit">1초</div>
+                            <div class="time-amount" id="timeAmount">-</div>
+                        </div>
+                        <button class="time-nav-btn next" id="timeNextBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="time-indicators">
+                        <span class="indicator active" data-index="0"></span>
+                        <span class="indicator" data-index="1"></span>
+                        <span class="indicator" data-index="2"></span>
+                        <span class="indicator" data-index="3"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 연봉 분포 그래프 -->
+            <section class="distribution-section">
+                <div class="section-header">
+                    <h2 class="section-title">경력별 연봉 분포</h2>
+                    <p class="section-desc">각 경력 연차별 최저·평균·최고 연봉을 확인하세요</p>
+                </div>
+                <div class="simple-chart-container">
+                    <canvas id="salaryBarChart"></canvas>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-bar"></span>
+                        <span>최저 ~ 최고 연봉</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-line"></span>
+                        <span>평균 연봉</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 지역별 평균 연봉 지도 -->
+            <section class="region-salary-section">
+                <div class="section-header">
+                    <h2 class="section-title">지역별 평균 연봉</h2>
+                    <p class="section-desc">전국 지역별 평균 연봉을 한눈에 확인하세요</p>
+                </div>
+                <div class="region-filters">
+                    <div class="region-filter-item">
+                        <label>직종</label>
+                        <select id="regionFilterProfession" class="region-filter-select">
+                            <option value="">전체</option>
+                            <option value="의사">의사</option>
+                            <option value="간호사">간호사</option>
+                            <option value="약사">약사</option>
+                        </select>
+                    </div>
+                    <div class="region-filter-item">
+                        <label>경력</label>
+                        <select id="regionFilterExperience" class="region-filter-select">
+                            <option value="">전체</option>
+                            <option value="1-3">1~3년차</option>
+                            <option value="4-6">4~6년차</option>
+                            <option value="7-9">7~9년차</option>
+                            <option value="10+">10년차 이상</option>
+                        </select>
+                    </div>
+                    <div class="region-filter-actions">
+                        <button type="button" class="btn-region-reset" id="btnRegionReset">
+                            <i class="fas fa-redo"></i>
+                            초기화
+                        </button>
+                    </div>
+                </div>
+                <div class="region-map-container" id="regionMap">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+                <div class="region-legend">
+                    <span class="legend-label">낮음</span>
+                    <div class="legend-gradient"></div>
+                    <span class="legend-label">높음</span>
+                </div>
+            </section>
+
+            <!-- 통계 카드 -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-label">참여자</p>
+                        <p class="stat-value" id="totalParticipants">0명</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-label">평균 연봉</p>
+                        <p class="stat-value" id="averageSalary">0만원</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-label">최고 연봉</p>
+                        <p class="stat-value" id="maxSalary">0만원</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-label">중앙값</p>
+                        <p class="stat-value" id="medianSalary">0만원</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 연봉 실수령액 계산기 -->
+            <section class="calculator-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calculator"></i>
+                        연봉 실수령액 계산기
+                    </h2>
+                    <p class="section-desc">연봉에서 세금과 4대보험을 제외한 실수령액을 계산해보세요</p>
+                </div>
+                <div class="calculator-container">
+                    <div class="calculator-input">
+                        <label for="calcSalary">연봉 (만원)</label>
+                        <input type="number" id="calcSalary" placeholder="예: 5000" min="0" step="100">
+                        <button id="btnCalculate" class="btn-calculate">
+                            <i class="fas fa-calculator"></i>
+                            계산하기
+                        </button>
+                    </div>
+                    <div class="calculator-result" id="calculatorResult">
+                        <div class="result-item">
+                            <span class="result-label">연봉 총액</span>
+                            <span class="result-value" id="totalSalary">-</span>
+                        </div>
+                        <div class="result-item deduction">
+                            <span class="result-label">4대보험 (약 9%)</span>
+                            <span class="result-value" id="insurance">-</span>
+                        </div>
+                        <div class="result-item deduction">
+                            <span class="result-label">소득세 (약 6.6%)</span>
+                            <span class="result-value" id="incomeTax">-</span>
+                        </div>
+                        <div class="result-item deduction">
+                            <span class="result-label">지방소득세 (약 0.7%)</span>
+                            <span class="result-value" id="localTax">-</span>
+                        </div>
+                        <div class="result-divider"></div>
+                        <div class="result-item total">
+                            <span class="result-label">월 실수령액</span>
+                            <span class="result-value highlight" id="monthlyNet">-</span>
+                        </div>
+                        <div class="result-item total">
+                            <span class="result-label">연 실수령액</span>
+                            <span class="result-value highlight" id="yearlyNet">-</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 실수령액 연봉 환산기 -->
+            <section class="reverse-calculator-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        실수령액 연봉 환산기
+                    </h2>
+                    <p class="section-desc">원하는 실수령액에 필요한 연봉을 계산해보세요</p>
+                </div>
+                <div class="calculator-container">
+                    <div class="calculator-input">
+                        <label for="calcNetSalary">원하는 월 실수령액 (만원)</label>
+                        <input type="number" id="calcNetSalary" placeholder="예: 350" min="0" step="10">
+                        <button id="btnReverseCalculate" class="btn-calculate">
+                            <i class="fas fa-sync-alt"></i>
+                            환산하기
+                        </button>
+                    </div>
+                    <div class="calculator-result" id="reverseCalculatorResult">
+                        <div class="result-item">
+                            <span class="result-label">원하는 월 실수령액</span>
+                            <span class="result-value" id="targetMonthly">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">원하는 연 실수령액</span>
+                            <span class="result-value" id="targetYearly">-</span>
+                        </div>
+                        <div class="result-divider"></div>
+                        <div class="result-item total">
+                            <span class="result-label">필요한 연봉 (세전)</span>
+                            <span class="result-value highlight" id="requiredSalary">-</span>
+                        </div>
+                        <div class="result-info">
+                            <i class="fas fa-info-circle"></i>
+                            <span>4대보험(9%) + 소득세(6.6%) + 지방소득세(0.7%)가 포함된 금액입니다</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 커뮤니티 미리보기 -->
+            <section class="community-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-comments"></i>
+                        연봉 커뮤니티
+                    </h2>
+                    <p class="section-desc">다른 사람들의 연봉 이야기를 확인해보세요</p>
+                </div>
+                <div class="community-grid">
+                    <div class="community-card">
+                        <div class="post-header">
+                            <span class="post-category hot">인기</span>
+                            <span class="post-date">2시간 전</span>
+                        </div>
+                        <h3 class="post-title">의사 5년차 연봉 협상 후기 공유합니다</h3>
+                        <p class="post-preview">병원 이직하면서 연봉 협상했는데요, 처음에는 6천이라고 했는데...</p>
+                        <div class="post-footer">
+                            <span class="post-stat"><i class="fas fa-eye"></i> 1,234</span>
+                            <span class="post-stat"><i class="fas fa-comment"></i> 45</span>
+                            <span class="post-stat"><i class="fas fa-heart"></i> 89</span>
+                        </div>
+                    </div>
+                    <div class="community-card">
+                        <div class="post-header">
+                            <span class="post-category">질문</span>
+                            <span class="post-date">5시간 전</span>
+                        </div>
+                        <h3 class="post-title">간호사 3년차 이직 시 적정 연봉은?</h3>
+                        <p class="post-preview">현재 대학병원 3년차인데 개인병원으로 이직 고민중입니다...</p>
+                        <div class="post-footer">
+                            <span class="post-stat"><i class="fas fa-eye"></i> 567</span>
+                            <span class="post-stat"><i class="fas fa-comment"></i> 23</span>
+                            <span class="post-stat"><i class="fas fa-heart"></i> 34</span>
+                        </div>
+                    </div>
+                    <div class="community-card">
+                        <div class="post-header">
+                            <span class="post-category">정보</span>
+                            <span class="post-date">1일 전</span>
+                        </div>
+                        <h3 class="post-title">2026년 의료업계 연봉 인상률 통계</h3>
+                        <p class="post-preview">올해 의료업계 평균 연봉 인상률이 5.2%로 집계되었습니다...</p>
+                        <div class="post-footer">
+                            <span class="post-stat"><i class="fas fa-eye"></i> 2,891</span>
+                            <span class="post-stat"><i class="fas fa-comment"></i> 67</span>
+                            <span class="post-stat"><i class="fas fa-heart"></i> 156</span>
+                        </div>
+                    </div>
+                    <div class="community-card">
+                        <div class="post-header">
+                            <span class="post-category">후기</span>
+                            <span class="post-date">2일 전</span>
+                        </div>
+                        <h3 class="post-title">약사 경력 10년, 연봉 상승 곡선 공유</h3>
+                        <p class="post-preview">제가 신입부터 10년차까지의 연봉 변화를 정리해봤습니다...</p>
+                        <div class="post-footer">
+                            <span class="post-stat"><i class="fas fa-eye"></i> 1,456</span>
+                            <span class="post-stat"><i class="fas fa-comment"></i> 52</span>
+                            <span class="post-stat"><i class="fas fa-heart"></i> 98</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="community-footer">
+                    <button class="btn-more">
+                        <i class="fas fa-plus-circle"></i>
+                        커뮤니티 더보기
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 연봉 입력 모달 -->
+    <div class="modal" id="salaryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>연봉 정보 입력</h2>
+                <button class="btn-close" id="btnCloseModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="info-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>입력하신 정보는 익명으로 통계에만 사용되며, 개인 정보는 절대 공개되지 않습니다.</p>
+                </div>
+                
+                <div class="info-notice" style="background: #f0f9ff; border-left-color: #0ea5e9;">
+                    <i class="fas fa-info-circle"></i>
+                    <p>직군, 지역, 경력 정보는 로그인 정보로 자동 입력됩니다.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>직군 <span class="label-badge">로그인 정보</span></label>
+                    <select id="inputProfession" class="form-input" disabled>
+                        <option value="">선택하세요</option>
+                        <option value="의사">의사</option>
+                        <option value="간호사">간호사</option>
+                        <option value="약사">약사</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>시/도 <span class="label-badge">로그인 정보</span></label>
+                    <select id="inputProvince" class="form-input" disabled>
+                        <option value="">선택하세요</option>
+                        <option value="서울">서울특별시</option>
+                        <option value="경기">경기도</option>
+                        <option value="부산">부산광역시</option>
+                        <option value="대구">대구광역시</option>
+                        <option value="인천">인천광역시</option>
+                        <option value="광주">광주광역시</option>
+                        <option value="대전">대전광역시</option>
+                        <option value="울산">울산광역시</option>
+                        <option value="세종">세종특별자치시</option>
+                        <option value="강원">강원도</option>
+                        <option value="충북">충청북도</option>
+                        <option value="충남">충청남도</option>
+                        <option value="전북">전라북도</option>
+                        <option value="전남">전라남도</option>
+                        <option value="경북">경상북도</option>
+                        <option value="경남">경상남도</option>
+                        <option value="제주">제주특별자치도</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>시/구 <span class="label-badge">로그인 정보</span></label>
+                    <select id="inputCity" class="form-input" disabled>
+                        <option value="">먼저 시/도를 선택하세요</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>경력 <span class="label-badge">로그인 정보</span></label>
+                    <select id="inputExperience" class="form-input">
+                        <option value="">선택하세요</option>
+                        <option value="1년차">1년차</option>
+                        <option value="2년차">2년차</option>
+                        <option value="3년차">3년차</option>
+                        <option value="4년차">4년차</option>
+                        <option value="5년차">5년차</option>
+                        <option value="6년차">6년차</option>
+                        <option value="7년차">7년차</option>
+                        <option value="8년차">8년차</option>
+                        <option value="9년차">9년차</option>
+                        <option value="10년차">10년차</option>
+                        <option value="11년차">11년차</option>
+                        <option value="12년차">12년차</option>
+                        <option value="13년차">13년차</option>
+                        <option value="14년차">14년차</option>
+                        <option value="15년차 이상">15년차 이상</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>연봉 구간 (만원) <span class="label-required">필수</span></label>
+                    <select id="inputSalary" class="form-input">
+                        <option value="">선택하세요</option>
+                        <option value="2000~2400">2,000 ~ 2,400만원</option>
+                        <option value="2400~2800">2,400 ~ 2,800만원</option>
+                        <option value="2800~3200">2,800 ~ 3,200만원</option>
+                        <option value="3200~3600">3,200 ~ 3,600만원</option>
+                        <option value="3600~4000">3,600 ~ 4,000만원</option>
+                        <option value="4000~5000">4,000 ~ 5,000만원</option>
+                        <option value="5000~6000">5,000 ~ 6,000만원</option>
+                        <option value="6000~7000">6,000 ~ 7,000만원</option>
+                        <option value="7000~8000">7,000 ~ 8,000만원</option>
+                        <option value="8000~10000">8,000 ~ 1억원</option>
+                        <option value="10000+">1억원 이상</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnCancelSalary">취소</button>
+                <button class="btn-submit" id="btnSubmitSalary">등록하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/salary.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+<script src="js/supabaseClient.cdn.js"></script>
+</html>

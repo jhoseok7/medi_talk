@@ -1,0 +1,206 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "상급종합병원 연봉 어느정도 받으시나요?",
+      "content": "5년차인데 이직 고민중입니다. 다들 연봉 얼마정도 받으시는지 궁금해요. 지역이랑 직급도 알려주시면 감사하겠습니다.",
+      "author": {
+        "profession": "의사",
+        "specialty": "내과",
+        "location": "서울시",
+        "experience": "5년차"
+      },
+      "tags": ["연봉", "이직", "상급종합"],
+      "likes": 42,
+      "comments": 18,
+      "views": 523,
+      "createdAt": "2026-01-29T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "title": "밤 근무 후 바로 낮 근무 하시는 분들 계신가요?",
+      "content": "밤샘 근무하고 바로 낮 근무 들어가는게 너무 힘들어요. 다들 어떻게 버티시나요? 건강관리 팁 있으시면 공유해주세요.",
+      "author": {
+        "profession": "간호사",
+        "specialty": "응급실",
+        "location": "서울시",
+        "experience": "3년차"
+      },
+      "tags": ["근무환경", "당직", "건강"],
+      "likes": 67,
+      "comments": 34,
+      "views": 892,
+      "createdAt": "2026-01-29T09:15:00Z"
+    },
+    {
+      "id": 3,
+      "title": "약국 개업 준비중인데 조언 부탁드려요",
+      "content": "10년 근무하고 이제 개업하려고 하는데 막상 하려니 걱정이 많네요. 개업 경험 있으신 분들 조언 좀 부탁드립니다!",
+      "author": {
+        "profession": "약사",
+        "specialty": null,
+        "location": "서울시",
+        "experience": "10년차"
+      },
+      "tags": ["개원", "창업", "조언"],
+      "likes": 28,
+      "comments": 15,
+      "views": 445,
+      "createdAt": "2026-01-29T08:45:00Z"
+    },
+    {
+      "id": 4,
+      "title": "방사선사 대우가 너무 안좋은것 같아요",
+      "content": "같은 의료기사인데 임상병리사나 물리치료사에 비해 대우가 많이 안좋은 것 같습니다. 다들 어떻게 생각하시나요?",
+      "author": {
+        "profession": "방사선사",
+        "specialty": null,
+        "location": "서울시",
+        "experience": "7년차"
+      },
+      "tags": ["근무환경", "연봉", "처우개선"],
+      "likes": 51,
+      "comments": 29,
+      "views": 678,
+      "createdAt": "2026-01-29T07:20:00Z"
+    },
+    {
+      "id": 5,
+      "title": "의대 본과 2학년인데 진로 고민됩니다",
+      "content": "전공 선택이 고민이에요. 내과, 외과 고민중인데 선배님들 조언 부탁드려요. 라이프스타일도 중요하게 생각하는 편입니다.",
+      "author": {
+        "profession": "의대생",
+        "specialty": "본과 2학년",
+        "location": "서울시",
+        "experience": "학생"
+      },
+      "tags": ["진로", "전공선택", "의대"],
+      "likes": 35,
+      "comments": 22,
+      "views": 512,
+      "createdAt": "2026-01-28T22:10:00Z"
+    },
+    {
+      "id": 6,
+      "title": "간호사 이직 타이밍 언제가 좋을까요?",
+      "content": "현재 3년차인데 이직을 고민중입니다. 경력 몇년차에 이직하는게 가장 좋을까요? 경험담 공유해주세요.",
+      "author": {
+        "profession": "간호사",
+        "specialty": "중환자실",
+        "location": "서울시",
+        "experience": "3년차"
+      },
+      "tags": ["이직", "경력", "조언"],
+      "likes": 48,
+      "comments": 31,
+      "views": 701,
+      "createdAt": "2026-01-28T20:35:00Z"
+    },
+    {
+      "id": 7,
+      "title": "병원 행정직 연봉 현실적인 이야기",
+      "content": "병원 행정직 5년차입니다. 연봉이 너무 오르지 않는 것 같아요. 다른 병원들은 어떤가요?",
+      "author": {
+        "profession": "병원행정",
+        "specialty": "인사팀",
+        "location": "서울시",
+        "experience": "5년차"
+      },
+      "tags": ["연봉", "행정직", "처우"],
+      "likes": 31,
+      "comments": 12,
+      "views": 389,
+      "createdAt": "2026-01-28T19:50:00Z"
+    },
+    {
+      "id": 8,
+      "title": "의사 파업 어떻게 생각하시나요?",
+      "content": "최근 의료계 이슈가 많은데 현장에서 일하시는 분들 의견이 궁금합니다. 솔직한 생각 나눠주세요.",
+      "author": {
+        "profession": "의사",
+        "specialty": "소아청소년과",
+        "location": "서울시",
+        "experience": "8년차"
+      },
+      "tags": ["의료정책", "시사", "의견"],
+      "likes": 89,
+      "comments": 56,
+      "views": 1234,
+      "createdAt": "2026-01-28T18:20:00Z"
+    },
+    {
+      "id": 9,
+      "title": "응급실 환자 폭력 대처 방법",
+      "content": "오늘 응급실에서 환자분께 폭언을 들었습니다. 정신적으로 너무 힘드네요. 다들 어떻게 대처하시나요?",
+      "author": {
+        "profession": "간호사",
+        "specialty": "응급실",
+        "location": "서울시",
+        "experience": "4년차"
+      },
+      "tags": ["근무환경", "환자관리", "스트레스"],
+      "likes": 73,
+      "comments": 41,
+      "views": 856,
+      "createdAt": "2026-01-28T16:45:00Z"
+    },
+    {
+      "id": 10,
+      "title": "학회 참석 비용 병원에서 지원받으시나요?",
+      "content": "학회 등록비가 너무 비싼데 병원에서 지원을 안해주네요. 다른 병원들은 어떤가요?",
+      "author": {
+        "profession": "약사",
+        "specialty": null,
+        "location": "서울시",
+        "experience": "6년차"
+      },
+      "tags": ["학회", "교육", "복지"],
+      "likes": 22,
+      "comments": 9,
+      "views": 267,
+      "createdAt": "2026-01-28T15:30:00Z"
+    }
+  ],
+  "professions": [
+    {
+      "id": "doctor",
+      "name": "의사",
+      "icon": "fa-user-md"
+    },
+    {
+      "id": "nurse",
+      "name": "간호사",
+      "icon": "fa-user-nurse"
+    },
+    {
+      "id": "pharmacist",
+      "name": "약사",
+      "icon": "fa-prescription-bottle"
+    },
+    {
+      "id": "radiologist",
+      "name": "방사선사",
+      "icon": "fa-x-ray"
+    },
+    {
+      "id": "lab-tech",
+      "name": "임상병리사",
+      "icon": "fa-microscope"
+    },
+    {
+      "id": "physical-therapist",
+      "name": "물리치료사",
+      "icon": "fa-dumbbell"
+    },
+    {
+      "id": "occupational-therapist",
+      "name": "작업치료사",
+      "icon": "fa-hands-helping"
+    },
+    {
+      "id": "dental-hygienist",
+      "name": "치위생사",
+      "icon": "fa-tooth"
+    }
+  ]
+}

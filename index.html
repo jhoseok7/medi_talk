@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메디톡 - 의료인 커뮤니티</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/header.css">
+    <link rel="stylesheet" href="css/components/post-card.css">
+    <link rel="stylesheet" href="css/components/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 섹션 헤더 */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px; /* 20px → 12px */
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #00b8a9;
+        }
+
+        .view-more {
+            color: #64748b;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .view-more:hover {
+            color: #00b8a9;
+        }
+
+        /* 섹션 간 간격 */
+        section {
+            margin-bottom: 32px !important; /* 40~64px → 32px */
+        }
+
+        /* 공지사항 영역 */
+        .notice-section {
+            padding: 0;
+        }
+        .notice-list {
+            padding: 0;
+            margin: 0;
+            background: none;
+            border-radius: 0;
+        }
+        .notice-list li {
+            margin-bottom: 0;
+        }
+        .notice-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 최신 글 미리보기 영역 */
+        .board-preview-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 카드 간 간격 16px → 10px */
+        }
+        .board-preview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 카드 간 간격 16px → 10px */
+        }
+        .board-preview-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            padding: 14px 16px; /* 24px → 14~16px */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .board-preview-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .board-preview-meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* 인기 게시글 그리드 */
+        .popular-section {
+            margin-bottom: 32px;
+        }
+        .popular-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px; /* 16px → 12px */
+        }
+        .popular-card {
+            background: white;
+            padding: 16px; /* 20px → 16px */
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .popular-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        }
+        .popular-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px; /* 10px → 8px */
+        }
+        .popular-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #64748b;
+        }
+        .popular-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px; /* 8px → 6px */
+            line-height: 1.4;
+        }
+        .popular-card-content {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 10px; /* 12px → 10px */
+        }
+        .popular-card-footer {
+            display: flex;
+            gap: 12px; /* 16px → 12px */
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .popular-card-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 카테고리 탭 */
+        .category-section {
+            margin-bottom: 32px;
+        }
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px; /* 20px → 12px */
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 0;
+        }
+        .category-tab {
+            padding: 8px 16px; /* 10px 20px → 8px 16px */
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+        .category-tab:hover {
+            color: #00b8a9;
+        }
+        .category-tab.active {
+            color: #00b8a9;
+            border-bottom-color: #00b8a9;
+        }
+
+        /* 연봉 하이라이트 */
+        .salary-highlight {
+            background: linear-gradient(135deg, #00b8a9 0%, #00a294 100%);
+            color: white;
+            border: none;
+        }
+        .salary-highlight .sidebar-title {
+            color: white;
+        }
+        .salary-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* 16px → 12px */
+            margin: 12px 0; /* 20px → 12px */
+        }
+        .salary-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .btn-salary-detail {
+            width: 100%;
+            padding: 8px; /* 10px → 8px */
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-salary-detail:hover {
+            background: white;
+            color: #00b8a9;
+        }
+
+        @media (max-width: 768px) {
+            .popular-grid {
+                grid-template-columns: 1fr;
+            }
+            .category-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            section {
+                margin-bottom: 20px !important;
+            }
+            .hero-section {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-user-md"></i>
+                <span>메디톡</span>
+            </a>
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="location.href='board.html'">
+                    <i class="fas fa-comments"></i>
+                    게시판
+                </button>
+                <button class="nav-btn" onclick="location.href='salary.html'">
+                    <i class="fas fa-coins"></i>
+                    연봉정보
+                </button>
+            </nav>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="검색어를 입력하세요" id="searchInput">
+            </div>
+            <div class="header-actions">
+
+                <button class="btn-login" onclick="location.href='login.html?next='+encodeURIComponent(window.location.pathname)">로그인</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-container">
+
+        <div class="content-wrapper">
+            <!-- 좌측 메인 콘텐츠 -->
+            <div class="main-content">
+                <!-- 연봉 데이터 섹션 -->
+                <section class="salary-data-section">
+                    <div class="section-header">
+                        <h2 class="section-title">연봉 데이터</h2>
+                    </div>
+                    <div class="salary-data-summary">
+                        <div class="salary-data-info">📊 현재 7개 직종 · 12개 데이터 수집 중</div>
+                        <div class="salary-data-info">⚙️ 직종·지역·연차 기준으로 정리됩니다</div>
+                    </div>
+                    <div class="salary-data-guide">🔐 연봉 데이터를 입력하면 전체 데이터를 확인할 수 있어요</div>
+                    <button class="salary-data-cta" onclick="location.href='salary.html'">지금 연봉 입력하고 데이터 확인하기</button>
+                </section>
+                <!-- 공지사항 섹션 -->
+                <section class="notice-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            공지사항
+                        </h2>
+                    </div>
+                    <ul class="notice-list">
+                        <li><strong>[점검 안내]</strong> 2월 2일(금) 02:00~04:00 서버 점검이 진행됩니다.</li>
+                        <li><strong>[신규 기능]</strong> 연봉 정보 공유 게시판이 오픈되었습니다!</li>
+                    </ul>
+                </section>
+                <!-- 게시판: 최신글 섹션 -->
+                <div class="board-section-row">
+                    <section class="board-preview-section">
+                        <div class="section-header">
+                            <h2 class="section-title">최신글</h2>
+                            <a href="board.html" class="view-more">전체보기 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <ul class="board-preview-list">
+                            <li>
+                                <span class="preview-title">오늘 당직 너무 힘드네요…<span class="comment-count">(3)</span></span>
+                                <span class="board-preview-meta">
+                                    <span class="meta-job">의사 · 12년차 · 서울</span>
+                                    <span class="meta-time">2분 전</span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="preview-title">연봉 협상 팁 공유해요!<span class="comment-count">(7)</span></span>
+                                <span class="board-preview-meta">
+                                    <span class="meta-job">약사 · 5년차 · 부산</span>
+                                    <span class="meta-time">10분 전</span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="preview-title">신규 간호사분들께 조언<span class="comment-count">(1)</span></span>
+                                <span class="board-preview-meta">
+                                    <span class="meta-job">간호사 · 1년차 · 대구</span>
+                                    <span class="meta-time">20분 전</span>
+                                </span>
+                            </li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                        </ul>
+                    </section>
+                    <section class="popular-section">
+                        <div class="section-header">
+                            <h2 class="section-title">인기글</h2>
+                            <a href="board.html" class="view-more">전체보기 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <ul class="board-preview-list">
+                            <li>
+                                <span class="preview-title">의료계 이슈 토론<span class="comment-count">(12)</span></span>
+                                <span class="board-preview-meta">
+                                    <span class="meta-job">의사 · 8년차 · 서울</span>
+                                    <span class="meta-time">5분 전</span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="preview-title">연봉 공개합니다!<span class="comment-count">(9)</span></span>
+                                <span class="board-preview-meta">
+                                    <span class="meta-job">약사 · 4년차 · 부산</span>
+                                    <span class="meta-time">15분 전</span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="preview-title">당직 꿀팁 공유<span class="comment-count">(5)</span></span>
+                                <span class="board-preview-meta">
+                                    <span class="meta-job">간호사 · 2년차 · 대구</span>
+                                    <span class="meta-time">30분 전</span>
+                                </span>
+                            </li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                            <li class="empty-item"></li>
+                        </ul>
+                    </section>
+                </div>
+
+                <!-- 카테고리별 게시글 -->
+            </div>
+
+            <!-- 우측 사이드바 -->
+            <aside class="sidebar">
+                
+            </aside>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">서비스 소개</a>
+                <a href="#">이용약관</a>
+                <a href="#">개인정보처리방침</a>
+                <a href="#">문의하기</a>
+            </div>
+            <p class="copyright">© 2026 메디톡. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+    <script src="js/supabaseClient.cdn.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

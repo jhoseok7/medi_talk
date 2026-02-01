@@ -1,0 +1,835 @@
+/* === 공통 박스 섹션 스타일 === */
+.board-preview-section,
+.popular-section,
+.salary-data-section,
+.notice-section {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 18px 20px !important;
+    margin-bottom: 16px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+/* === 공통 섹션 헤더/타이틀 === */
+.board-preview-section .section-header,
+.popular-section .section-header,
+.salary-data-section .section-header,
+.notice-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.board-preview-section .section-title,
+.popular-section .section-title,
+.salary-data-section .section-title,
+.notice-section .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+/* === 공통 리스트 스타일 === */
+.board-preview-section .board-preview-list,
+.popular-section .board-preview-list {
+    list-style: none !important;
+    padding-left: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+/* === 메인 컨테이너 가운데 정렬 === */
+.main-container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 1100px;
+    width: 100%;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+.content-wrapper {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+/* === 리스트 아이템, 제목, 댓글, 메타 === */
+.board-preview-list li,
+.popular-section .board-preview-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    font-size: 0.98rem;
+    color: #1e293b;
+    line-height: 1.7;
+    font-weight: 400;
+}
+.preview-title {
+    max-width: 25ch;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-right: 0;
+}
+.comment-count {
+    margin-left: 0;
+    margin-right: 0;
+    background: none;
+    color: #00b8a9;
+    font-size: 0.95em;
+    font-weight: 600;
+    border-radius: 0;
+    padding: 0;
+    vertical-align: middle;
+}
+.board-preview-meta {
+    margin-left: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 180px;
+    font-size: 0.92rem;
+    color: #64748b;
+    white-space: nowrap;
+}
+.board-preview-meta .meta-job {
+    color: #64748b;
+    font-weight: 400;
+}
+.board-preview-meta .meta-time {
+    color: #b0b8c1;
+    font-weight: 400;
+    margin-left: 0;
+}
+.empty-item {
+    height: 32px;
+    min-height: 32px;
+    display: block;
+    background: none;
+    border: none;
+    pointer-events: none;
+}
+
+/* 연봉 데이터 섹션 */
+.salary-data-section {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 18px 20px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px !important;
+    align-items: flex-start;
+}
+.salary-data-section .section-header {
+    margin-bottom: 8px !important;
+}
+.salary-data-section .section-title {
+    font-size: 1.3rem;
+    color: #00b8a9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: var(--main-letter-spacing) !important;
+    word-spacing: var(--main-word-spacing) !important;
+    margin-bottom: 6px !important;
+}
+.salary-data-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1px !important;
+    font-size: 1.05rem;
+    color: #334155;
+    font-weight: 500;
+}
+.salary-data-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.98rem !important;
+    letter-spacing: var(--main-letter-spacing) !important;
+    word-spacing: var(--main-word-spacing) !important;
+}
+.salary-data-guide {
+    color: #64748b;
+    font-size: 0.95rem !important;
+    margin: 6px 0 0 0 !important;
+}
+.salary-data-cta {
+    margin-top: 14px !important;
+    padding: 8px 18px !important;
+    background: #00b8a9;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem !important;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    align-self: flex-start;
+}
+.salary-data-cta:hover {
+    background: #008e7e;
+}
+/* 오른쪽 사이드바 크기 대칭 */
+.sidebar {
+    min-width: 120px;
+    max-width: 120px;
+}
+/* 왼쪽 사이드바 스타일 */
+.left-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 120px;
+    max-width: 120px;
+    margin-right: 0;
+}
+.left-sidebar .sidebar-ad,
+.left-sidebar .ad-placeholder {
+    width: 100%;
+    background: #fff !important;
+    border-radius: 12px !important;
+    border: 1px solid #f1f5f9 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    padding: 10px 12px !important;
+    box-sizing: border-box !important;
+}
+/* 왼쪽 광고 영역 스타일 */
+.main-ad {
+    margin: 32px 0 0 0;
+    display: flex;
+    justify-content: center;
+}
+.main-ad .ad-placeholder {
+    width: 100%;
+    min-height: 80px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+/* 게시판: 최신 글 미리보기 */
+.board-preview-section {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 18px 20px !important;
+    margin-bottom: 16px !important;
+}
+.board-preview-list {
+    list-style: none !important;
+    padding-left: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.board-preview-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    font-size: 0.98rem;
+    color: #1e293b;
+    line-height: 1.7;
+    font-weight: 400;
+}
+.board-preview-list .board-preview-meta {
+    font-size: 0.92rem;
+    color: #64748b;
+    margin-left: 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.board-preview-meta {
+    margin-left: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 180px;
+    font-size: 0.92rem;
+    color: #64748b;
+    margin-left: 16px;
+    white-space: nowrap;
+}
+.board-preview-meta .meta-job {
+    color: #64748b;
+    font-weight: 400;
+}
+.board-preview-meta .meta-time,
+.board-preview-meta .meta-views {
+    color: #b0b8c1;
+    font-weight: 400;
+    margin-left: 0;
+}
+.board-preview-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.board-preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+}
+.board-preview-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 6px;
+    line-height: 1.4;
+    letter-spacing: var(--main-letter-spacing) !important;
+    word-spacing: var(--main-word-spacing) !important;
+}
+.board-preview-meta {
+    font-size: 0.92rem !important;
+    color: #64748b !important;
+    margin-left: 8px;
+}
+/* --- 카드 제목-내용 간격 통일 --- */
+.board-preview-title,
+.popular-card-title,
+.salary-data-info,
+.notice-list li strong {
+    margin-bottom: 6px !important;
+}
+/* 카드 내 제목-내용 간격을 모두 6px로 통일 */
+/* 메인 섹션 반응형 스타일 */
+
+
+.hero-section {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+    padding-top: 16px !important;
+    padding-bottom: 36px;
+    text-align: center;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 0;
+}
+.hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #00b8a9;
+    margin-bottom: 6px !important;
+}
+.hero-section p {
+    font-size: 1.2rem;
+    color: #64748b;
+    margin-bottom: 10px !important;
+}
+.hero-cta {
+    padding: 7px 20px !important; /* 10px 28px → 7px 20px */
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: #00b8a9;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.notice-section {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 18px 20px !important;
+    margin-bottom: 16px !important;
+    margin-top: 0 !important; /* 32px → 18px */
+    border: none;
+}
+.notice-section .section-header {
+    margin-bottom: 12px;
+}
+.notice-section .section-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    letter-spacing: var(--main-letter-spacing) !important;
+    word-spacing: var(--main-word-spacing) !important;
+    margin-bottom: 6px !important;
+}
+.notice-section .section-title i {
+    color: #00b8a9 !important;
+}
+.notice-list {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.notice-list li {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: 0.98rem !important;
+    font-weight: 400 !important;
+    color: #1e293b !important;
+    line-height: 1.7;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.notice-list li strong {
+    color: #00b8a9 !important;
+    font-weight: 700 !important;
+    margin-right: 6px !important;
+}
+
+.notice-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.board-summary-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.board-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: flex-start;
+}
+.board-summary-list > div {
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 18px 22px;
+    min-width: 0;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0;
+}
+
+.salary-summary-section {
+    background: linear-gradient(135deg, #00b8a9 0%, #00a294 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.salary-summary-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.salary-summary-header .fa-coins {
+    font-size: 1.5rem;
+}
+.salary-summary-stats {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    font-size: 1.2rem;
+}
+.salary-label {
+    opacity: 0.85;
+}
+.salary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+.salary-cta {
+    margin-top: 8px;
+    padding: 12px 32px;
+    background: #fff;
+    color: #00b8a9;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+}
+
+@media (max-width: 900px) {
+    .content-wrapper {
+        max-width: 98vw;
+        gap: 24px;
+    }
+    .salary-summary-stats {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .content-wrapper {
+        max-width: 100vw;
+        gap: 16px;
+    }
+    .hero-section {
+        padding: 20px 0 12px 0;
+    }
+    .hero-section h1 {
+        font-size: 1.2rem;
+    }
+    .notice-section, .board-summary-section, .salary-summary-section {
+        padding: 10px 4px;
+    }
+    .salary-summary-header .fa-coins {
+        font-size: 1.1rem;
+    }
+    .salary-summary-stats {
+        font-size: 1rem;
+    }
+    .salary-value {
+        font-size: 1.1rem;
+    }
+}
+/* 전역 리셋 및 기본 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 의료 테마 컬러 */
+    --primary-color: #00b8a9;
+    --primary-dark: #008e7e;
+    --secondary-color: #f8f9fa;
+    --text-primary: #2c3e50;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --hover-bg: #f1f3f5;
+    --white: #ffffff;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    padding-top: 70px;
+}
+
+/* 컨테이너 */
+.main-container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 1100px;
+    width: 100%;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 12px !important; /* 20px → 12px */
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px !important; /* 18px → 10px */
+    width: 100%;
+.main-content {
+    flex: 1 1 0%;
+    min-width: 0;
+    margin: 0 18px !important; /* 32px → 18px */
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+}
+
+/* 버튼 공통 스타일 */
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* 링크 스타일 */
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--secondary-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+    .content-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        width: 100%;
+        padding-top: 60px;
+    }
+}
+
+.btn-login,
+.btn-signup {
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: #00b8a9;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: all 0.2s ease;
+}
+.btn-login:hover,
+.btn-signup:hover {
+    background: #008e7e;
+    color: #fff;
+    opacity: 0.9;
+}
+
+:root {
+    --main-letter-spacing: 0.01em;
+    --main-word-spacing: 0.02em;
+}
+body, button, input, textarea, select, .section-title, .view-more, .board-preview-title, .board-preview-meta, .popular-card-title, .popular-card-content, .salary-data-info, .salary-data-guide, .salary-data-cta, .notice-list li {
+    letter-spacing: var(--main-letter-spacing) !important;
+    word-spacing: var(--main-word-spacing) !important;
+}
+
+/* --- 메인 디자인 단순화: 카드 제거, 섹션 단위 박스만 사용 --- */
+section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: none;
+    padding: 18px 20px;
+    margin-bottom: 22px !important;
+}
+.section-header {
+    margin-bottom: 10px !important;
+}
+.section-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    letter-spacing: var(--main-letter-spacing) !important;
+    word-spacing: var(--main-word-spacing) !important;
+    margin-bottom: 8px !important;
+}
+/* 리스트형 텍스트 스타일 */
+.notice-list,
+.board-preview-list,
+.salary-data-summary {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.notice-list li,
+.board-preview-card,
+.salary-data-info {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: 0.98rem !important;
+    font-weight: 400 !important;
+    color: #1e293b !important;
+    line-height: 1.7;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.notice-list li strong {
+    color: #00b8a9 !important;
+    font-weight: 700 !important;
+    margin-right: 6px !important;
+}
+.board-preview-meta {
+    font-size: 0.92rem !important;
+    color: #64748b !important;
+    margin-left: 8px;
+}
+.salary-data-guide {
+    font-size: 0.95rem !important;
+    color: #64748b !important;
+    margin: 6px 0 0 0 !important;
+}
+.salary-data-cta {
+    margin-top: 14px !important;
+    padding: 8px 18px !important;
+    background: #00b8a9;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem !important;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    align-self: flex-start;
+}
+.salary-data-cta:hover {
+    background: #008e7e;
+}
+
+.board-section-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px !important;
+    margin-top: 0 !important;
+}
+.board-section-row .board-preview-section,
+.board-section-row .popular-section {
+    flex: 1 1 0;
+    min-width: 0;
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 18px 20px !important;
+    margin-bottom: 16px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+.board-section-row .popular-section {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+.board-section-row .popular-grid {
+    flex: 1 1 0;
+}
+@media (max-width: 900px) {
+    .board-section-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+}
+
+.comment-count {
+    margin-left: 0;
+    margin-right: 0;
+    background: none;
+    color: #00b8a9;
+    font-size: 0.95em;
+    font-weight: 600;
+    border-radius: 0;
+    padding: 0;
+    vertical-align: middle;
+}
+
+.preview-title {
+    display: inline-block;
+    max-width: 25ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-right: 0;
+}
+
+.empty-item {
+    height: 32px;
+    min-height: 32px;
+    display: block;
+    background: none;
+    border: none;
+    pointer-events: none;
+}

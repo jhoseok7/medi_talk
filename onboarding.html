@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>환영합니다 - 메디톡</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .onboarding-container {
+            max-width: 500px;
+            margin: 60px auto 0 auto;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .onboarding-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00b8a9;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .onboarding-subtitle {
+            font-size: 1rem;
+            color: #64748b;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .onboarding-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        .form-group select,
+        .form-group input {
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #00b8a9;
+            box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.1);
+        }
+        .onboarding-btn {
+            padding: 14px 0;
+            background: #00b8a9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 16px;
+        }
+        .onboarding-btn:hover {
+            background: #009688;
+        }
+        .onboarding-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .welcome-message {
+            background: linear-gradient(135deg, #00b8a9, #009688);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .welcome-message i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .skip-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        .skip-link a {
+            color: #00b8a9;
+            text-decoration: none;
+        }
+        .skip-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-stethoscope"></i>
+                    <span>메디톡</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="onboarding-container">
+            <div class="welcome-message">
+                <i class="fas fa-heartbeat"></i>
+                <h2>메디톡에 오신 것을 환영합니다!</h2>
+                <p>더 나은 의료 커뮤니티를 위해 몇 가지 정보만 입력해주세요.</p>
+            </div>
+
+            <h1 class="onboarding-title">프로필 설정</h1>
+            <p class="onboarding-subtitle">이 정보는 언제든지 수정할 수 있습니다.</p>
+
+            <form class="onboarding-form">
+                <div class="form-group">
+                    <label for="profession">직업 <span style="color: #ef4444;">*</span></label>
+                    <select id="profession" required>
+                        <option value="">선택해주세요</option>
+                        <option value="물리치료사">물리치료사</option>
+                        <option value="작업치료사">작업치료사</option>
+                        <option value="방사선사">방사선사</option>
+                        <option value="임상병리사">임상병리사</option>
+                        <option value="치과기공사">치과기공사</option>
+                        <option value="치과위생사">치과위생사</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">근무 지역 <span style="color: #ef4444;">*</span></label>
+                    <select id="location">
+                        <option value="">선택해주세요</option>
+                        <option value="서울">서울</option>
+                        <option value="부산">부산</option>
+                        <option value="대구">대구</option>
+                        <option value="인천">인천</option>
+                        <option value="광주">광주</option>
+                        <option value="대전">대전</option>
+                        <option value="울산">울산</option>
+                        <option value="세종">세종</option>
+                        <option value="경기">경기</option>
+                        <option value="강원">강원</option>
+                        <option value="충북">충북</option>
+                        <option value="충남">충남</option>
+                        <option value="전북">전북</option>
+                        <option value="전남">전남</option>
+                        <option value="경북">경북</option>
+                        <option value="경남">경남</option>
+                        <option value="제주">제주</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">경력 시작일 <span style="color: #ef4444;">*</span></label>
+                    <input type="date" id="experience" placeholder="경력 시작일을 선택해주세요">
+                </div>
+
+                <div class="form-group">
+                    <label for="certificate">면허증 사진 <span style="color: #ef4444;">*</span></label>
+                    <input type="file" id="certificate" accept="image/*" style="padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; box-sizing: border-box;">
+                    <small style="color: #64748b; font-size: 0.85rem; margin-top: 4px; display: block;">면허증 사진을 첨부해주세요 (선택사항)</small>
+                </div>
+
+                <button type="submit" class="onboarding-btn">완료</button>
+                <small style="display: block; text-align: center; margin-top: 12px; color: #64748b; font-size: 0.85rem;">검토 후 가입승인합니다</small>
+            </form>
+
+        </div>
+    </main>
+
+    <script src="js/supabaseClient.cdn.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // DOM 로드 시 OAuth 정보 확인
+        document.addEventListener('DOMContentLoaded', function() {
+            const oauthUser = sessionStorage.getItem('oauth_user');
+            if (!oauthUser) {
+                // OAuth 정보가 없으면 로그인 페이지로 리다이렉트
+                window.location.href = 'login.html';
+                return;
+            }
+        });
+
+        // 온보딩 폼 제출
+        const form = document.querySelector('.onboarding-form');
+        const submitBtn = form.querySelector('.onboarding-btn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const profession = document.getElementById('profession').value;
+            const location = document.getElementById('location').value.trim();
+            const experience = document.getElementById('experience').value;
+            const certificateFile = document.getElementById('certificate').files[0];
+
+            if (!profession) {
+                alert('직업을 선택해주세요.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '설정 중...';
+
+            let certificateUrl = '';
+
+            // 파일이 첨부된 경우 업로드
+            if (certificateFile) {
+                try {
+                    const fileExt = certificateFile.name.split('.').pop();
+                    const fileName = `${Date.now()}.${fileExt}`;
+                    const filePath = `certificates/${fileName}`;
+
+                    const { data, error } = await window.supabaseClient.storage
+                        .from('user-files')
+                        .upload(filePath, certificateFile);
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    // 공개 URL 가져오기
+                    const { data: urlData } = window.supabaseClient.storage
+                        .from('user-files')
+                        .getPublicUrl(filePath);
+
+                    certificateUrl = urlData.publicUrl;
+                } catch (uploadError) {
+                    console.error('File upload error:', uploadError);
+                    alert('파일 업로드 중 오류가 발생했습니다. 다시 시도해주세요.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '시작하기';
+                    return;
+                }
+            }
+
+            try {
+                // OAuth 정보 가져오기
+                const oauthUser = JSON.parse(sessionStorage.getItem('oauth_user'));
+
+                // 프로필 생성
+                const { error } = await window.supabaseClient
+                    .from('users')
+                    .insert([{
+                        email: oauthUser.email,
+                        profession: profession,
+                        location: location,
+                        experience: experience,
+                        certificate_url: certificateUrl,
+                        created_at: new Date().toISOString()
+                    }]);
+
+                if (error) {
+                    throw error;
+                }
+
+                // 세션 정보 제거
+                sessionStorage.removeItem('oauth_user');
+
+                // 성공 메시지 및 리다이렉트
+                alert('프로필이 설정되었습니다. 메디톡을 시작해보세요!');
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                console.error('Profile creation error:', error);
+                alert('프로필 설정 중 오류가 발생했습니다. 다시 시도해주세요.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '시작하기';
+            }
+        });
+
+    </script>
+</body>
+</html>
