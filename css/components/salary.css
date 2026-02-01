@@ -1151,6 +1151,7 @@ tr:hover {
     transition: all 0.2s;
     position: relative;
     z-index: 10;
+    pointer-events: auto;
 }
 
 .btn-close:hover {

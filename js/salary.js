@@ -1306,50 +1306,59 @@ function openSalaryModal() {
         document.getElementById('inputCity').value = profile.city || '';
     }
     document.getElementById('inputExperience').value = profile.experience || '';
+
+    // 모달 열릴 때 이벤트 리스너 다시 바인딩
+    bindModalEvents();
 }
 
-// CTA 카드, 내 연봉 정보 입력 버튼 클릭 시 모달 열기
-const ctaCard = document.getElementById('ctaCard');
-if (ctaCard) {
-    ctaCard.addEventListener('click', openSalaryModal);
-}
-const btnParticipate = document.getElementById('btnParticipate');
-if (btnParticipate) {
-    btnParticipate.addEventListener('click', openSalaryModal);
-}
+
 
 // 모달 닫기
 function closeModal() {
-    console.log('closeModal called');
     const modal = document.getElementById('salaryModal');
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
-}
-
-// 모달 닫기(X) 버튼
-const btnCloseModal = document.getElementById('btnCloseModal');
-if (btnCloseModal) {
-    console.log('btnCloseModal found, adding event listener');
-    btnCloseModal.addEventListener('click', closeModal);
-} else {
-    console.log('btnCloseModal not found');
-}
-// 취소 버튼
-function bindCancelSalaryButton() {
-    const btnCancelSalary = document.getElementById('btnCancelSalary');
-    if (btnCancelSalary) {
-        btnCancelSalary.addEventListener('click', closeModal);
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
     }
 }
-bindCancelSalaryButton();
-document.addEventListener('DOMContentLoaded', bindCancelSalaryButton);
 
-// 모달 배경 클릭 시 닫기
-document.getElementById('salaryModal').addEventListener('click', (e) => {
+// 모달 이벤트 바인딩 함수
+function bindModalEvents() {
+    // 모달 닫기(X) 버튼
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    if (btnCloseModal) {
+        // 기존 이벤트 리스너 제거 후 다시 추가
+        btnCloseModal.removeEventListener('click', closeModal);
+        btnCloseModal.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeModal();
+        });
+    }
+
+    // 취소 버튼
+    const btnCancelSalary = document.getElementById('btnCancelSalary');
+    if (btnCancelSalary) {
+        btnCancelSalary.removeEventListener('click', closeModal);
+        btnCancelSalary.addEventListener('click', closeModal);
+    }
+
+    // 모달 배경 클릭 시 닫기
+    const modal = document.getElementById('salaryModal');
+    if (modal) {
+        modal.removeEventListener('click', handleModalBackgroundClick);
+        modal.addEventListener('click', handleModalBackgroundClick);
+    }
+}
+
+// 모달 배경 클릭 핸들러
+function handleModalBackgroundClick(e) {
     if (e.target.id === 'salaryModal') {
         closeModal();
     }
-});
+}
+
+
 
 // 연봉 정보 제출
 document.getElementById('btnSubmitSalary').addEventListener('click', () => {
@@ -1479,4 +1488,19 @@ function initialize() {
     renderTable();
 }
 
-// initialize() 호출은 DOMContentLoaded 내에서 실행됨
+// DOM 로드 후 이벤트 바인딩
+document.addEventListener('DOMContentLoaded', function() {
+    // CTA 카드, 내 연봉 정보 입력 버튼 클릭 시 모달 열기
+    const ctaCard = document.getElementById('ctaCard');
+    if (ctaCard) {
+        ctaCard.addEventListener('click', openSalaryModal);
+    }
+    const btnParticipate = document.getElementById('btnParticipate');
+    if (btnParticipate) {
+        btnParticipate.addEventListener('click', openSalaryModal);
+    }
+
+    // 모달 이벤트 바인딩
+    bindModalEvents();
+
+});
