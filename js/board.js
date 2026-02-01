@@ -64,7 +64,7 @@ async function hasBoardInteractionPermission(boardType) {
     if (!currentUser) return false;
 
     try {
-        // Supabase에서 해당 사용자의 직종별 인증 상태 확인
+        // Supabase에서 해당 사용자의 직종별 인증 상태 확인 (users 테이블 사용)
         const professionMap = {
             pt: '물리치료사',
             ot: '작업치료사',
@@ -78,10 +78,9 @@ async function hasBoardInteractionPermission(boardType) {
         if (!targetProfession) return false;
 
         const { data, error } = await window.supabaseClient
-            .from('job')
-            .select('is_verified')
+            .from('users')
+            .select('profession, is_verified')
             .eq('email', currentUser.email)
-            .eq('profession', targetProfession)
             .single();
 
         if (error) {
@@ -89,7 +88,8 @@ async function hasBoardInteractionPermission(boardType) {
             return false;
         }
 
-        return data && data.is_verified === true;
+        // 사용자의 profession이 해당 게시판의 profession과 일치하고, is_verified가 true인지 확인
+        return data && data.profession === targetProfession && data.is_verified === true;
 
     } catch (error) {
         console.error('Permission check failed:', error);
