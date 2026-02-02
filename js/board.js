@@ -169,44 +169,7 @@ function formatPostDate(dateStr) {
         return `${mon}-${day}`;
     }
 }
-// === 인기글 선정 가중치 (MVP용, 추후 조정 가능) ===
-const POPULAR_DAYS = 7; // 최근 7일
-const POPULAR_COMMENT_WEIGHT = 5;
-const POPULAR_COUNT = 3;
-
-// 인기글 선정 함수
-function getPopularPosts(posts) {
-    const now = new Date();
-    // 최근 7일 이내만
-    const recentPosts = posts.filter(post => {
-        const postDate = new Date(post.createdAt || post.date);
-        return (now - postDate) / (1000 * 60 * 60 * 24) <= POPULAR_DAYS;
-    });
-    // 점수 계산 및 정렬
-    return [...recentPosts]
-        .sort((a, b) => {
-            const scoreA = (a.views || 0) + (a.comments || 0) * POPULAR_COMMENT_WEIGHT;
-            const scoreB = (b.views || 0) + (b.comments || 0) * POPULAR_COMMENT_WEIGHT;
-            if (scoreB !== scoreA) return scoreB - scoreA;
-            // 동점이면 최신글 우선
-            const dateA = new Date(a.createdAt || a.date);
-            const dateB = new Date(b.createdAt || b.date);
-            return dateB - dateA;
-        })
-        .slice(0, POPULAR_COUNT);
-}
-
-// 일반글(인기글 제외) 필터 함수
-function getNormalPosts(posts, popularPosts) {
-    const popularIds = new Set(popularPosts.map(p => p.id));
-    return posts.filter(post => !popularIds.has(post.id));
-}
-
-// 일반글 페이징 함수
-function getPagedNormalPosts(normalPosts, page, pageSize) {
-    const startIdx = (page - 1) * pageSize;
-    return normalPosts.slice(startIdx, startIdx + pageSize);
-}
+// === 게시글 상수 ===
 // 상태 관리: currentTab, currentPage, postList
 let currentTab = 'all';
 let currentPage = 1;
@@ -298,30 +261,14 @@ function renderBoardPosts() {
         const dateB = new Date(b.createdAt || b.date);
         return dateB - dateA;
     });
-    // 인기글 선정 (1페이지만)
-    const popularPosts = currentPage === 1 ? getPopularPosts(sortedPosts) : [];
-    // 일반글(인기글 제외)
-    const normalPosts = getNormalPosts(sortedPosts, popularPosts);
-    // 일반글 페이징
-    let pageNormalPosts;
-    if (currentPage === 1) {
-        pageNormalPosts = getPagedNormalPosts(normalPosts, 1, POSTS_PER_PAGE);
-    } else {
-        pageNormalPosts = getPagedNormalPosts(normalPosts, currentPage, POSTS_PER_PAGE);
-    }
-    // 렌더링: 1페이지는 인기글 3개 + 일반글, 2페이지~는 일반글만
+    // 페이징 (25개씩)
+    const startIdx = (currentPage - 1) * POSTS_PER_PAGE;
+    const endIdx = startIdx + POSTS_PER_PAGE;
+    const pagePosts = sortedPosts.slice(startIdx, endIdx);
+    // 렌더링
     let rows = [];
-    if (currentPage === 1) {
-        for (let i = 0; i < popularPosts.length; i++) {
-            rows.push(createPostRow(popularPosts[i], i, null, null, currentPage));
-        }
-        for (let i = 0; i < pageNormalPosts.length; i++) {
-            rows.push(createPostRow(pageNormalPosts[i], popularPosts.length + i, null, i, currentPage));
-        }
-    } else {
-        for (let i = 0; i < pageNormalPosts.length; i++) {
-            rows.push(createPostRow(pageNormalPosts[i], i, null, i, currentPage));
-        }
+    for (let i = 0; i < pagePosts.length; i++) {
+        rows.push(createPostRow(pagePosts[i], startIdx + i, sortedPosts.length));
     }
     // 게시글이 없으면 빈 메시지 표시
     if (rows.length === 0) {
@@ -335,7 +282,7 @@ function renderBoardPosts() {
         `);
     }
     tbody.innerHTML = rows.join('');
-    renderPagination(normalPosts.length);
+    renderPagination(sortedPosts.length);
 }
 // 게시판 탭 전환 (공통 구조, 데이터만 변경)
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -426,8 +373,6 @@ let posts = [];
 function createPostRow(post, idx, totalCount) {
     // ...번호 및 인기글 관련 코드 제거...
     const dateVal = post.date || (post.createdAt ? post.createdAt : '');
-    // 인기글 여부: 1페이지 상단 3개만
-    const isPopular = currentPage === 1 && idx < 3;
     return `
         <tr class="board-row" onclick="location.href='post-detail.html?id=${post.id}'">
             <td class="board-title-cell">
@@ -435,7 +380,6 @@ function createPostRow(post, idx, totalCount) {
                     ${post.title}
                     <span class="comment-count">
                         ${post.comments && post.comments > 0 ? ` (${post.comments})` : ''}
-                        ${isPopular ? '<span class="fire-icon" style="color:#ff9800;margin-left:4px;">🔥</span>' : ''}
                     </span>
                 </a>
             </td>
