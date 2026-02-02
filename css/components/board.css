@@ -402,3 +402,29 @@
         gap: 12px;
     }
 }
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .board-row {
+        padding: 8px 12px;
+        min-height: 40px;
+    }
+
+    .board-title-link {
+        font-size: 14px;
+    }
+
+    .comment-count {
+        font-size: 12px;
+        margin-left: 4px;
+    }
+
+    .board-meta {
+        gap: 8px;
+        font-size: 12px;
+    }
+
+    .board-likes, .board-author, .board-views, .board-date {
+        font-size: 12px;
+    }
+}
