@@ -215,7 +215,7 @@ function renderPagination(totalPosts) {
             const page = parseInt(this.dataset.page);
             if (!isNaN(page) && page >= 1 && page <= totalPages && page !== currentPage) {
                 currentPage = page;
-                renderAllPosts();
+                renderBoardPosts();
                 // 스크롤 게시판 상단으로 이동
                 const boardTop = document.querySelector('.board-header') || document.querySelector('.board-list-wrapper');
                 if (boardTop) {
@@ -323,10 +323,17 @@ function scrollBoardTop() {
 // Supabase에서 게시글 로딩
 async function loadPostsFromSupabase() {
     try {
-        // 먼저 posts만 조회
+        // posts와 users 테이블 JOIN해서 작성자 정보 함께 조회
         const { data, error } = await window.supabaseClient
             .from('posts')
-            .select('*')
+            .select(`
+                *,
+                users!posts_user_id_fkey (
+                    job,
+                    region,
+                    experience
+                )
+            `)
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -339,15 +346,20 @@ async function loadPostsFromSupabase() {
             id: post.id,
             title: post.title,
             content: post.content,
-            profession: '', // 사용자 정보는 별도 조회 필요
-            location: '',
-            experience: '',
+            profession: post.users?.job || '', // Supabase users 테이블의 job 필드
+            location: post.users?.region || '', // Supabase users 테이블의 region 필드
+            experience: post.users?.experience || '', // Supabase users 테이블의 experience 필드
             tags: post.tags || [],
             likes: post.likes || 0,
             comments: post.comments || 0,
             views: post.views || 0,
             createdAt: post.created_at,
             date: post.created_at,
+            author: {
+                profession: post.users?.job || '',
+                location: post.users?.region || '',
+                experience: post.users?.experience || ''
+            },
             ...post
         }));
     } catch (error) {
