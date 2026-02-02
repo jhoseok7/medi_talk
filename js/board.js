@@ -1,7 +1,11 @@
 // 글쓰기 버튼 권한 처리
 async function updateWriteButton() {
+    console.log('updateWriteButton 호출됨');
     const btn = document.getElementById('btnWriteBoard');
-    if (!btn) return;
+    if (!btn) {
+        console.log('btnWriteBoard 버튼을 찾을 수 없음');
+        return;
+    }
 
     // auth.js 함수들이 로드되었는지 확인
     if (typeof isLoggedIn !== 'function') {
@@ -11,79 +15,69 @@ async function updateWriteButton() {
 
     console.log('글쓰기 버튼 업데이트:', { currentTab, isLoggedIn: isLoggedIn() });
 
+    // Reset button state
+    btn.classList.remove('disabled');
+    btn.style.opacity = '1';
+    btn.disabled = false;
+    btn.onclick = null; // 기존 onclick 제거
+
     // 자유게시판: 로그인만 하면 누구나 글쓰기 가능
     if (currentTab === 'all') {
         if (isLoggedIn()) {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.style.cursor = 'pointer';
             btn.onclick = function(e) {
                 e.preventDefault();
+                console.log('로그인 상태: 글쓰기 페이지로 이동');
                 window.location.href = 'write.html';
             };
             console.log('자유게시판: 글쓰기 버튼 활성화');
         } else {
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.7';
             btn.onclick = function(e) {
                 e.preventDefault();
+                console.log('비로그인 상태: 로그인 모달 표시');
                 showLoginRequiredModal();
             };
-            console.log('자유게시판: 로그인 필요');
+            console.log('자유게시판: 로그인 필요, onclick 설정됨');
         }
     } else {
-        // 직종별 게시판: 해당 직종 인증된 사용자만 글쓰기 가능
-        const hasPermission = await hasBoardInteractionPermission(currentTab);
-        console.log('직종별 게시판 권한 체크 결과:', hasPermission);
-
-        if (hasPermission) {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.style.cursor = 'pointer';
+        // 직종별 게시판: 로그인하지 않은 경우 로그인 유도, 로그인한 경우 권한 체크
+        if (!isLoggedIn()) {
+            btn.style.opacity = '0.7';
             btn.onclick = function(e) {
                 e.preventDefault();
-                window.location.href = 'write.html';
+                console.log('비로그인 상태: 로그인 모달 표시');
+                showLoginRequiredModal();
             };
-            console.log('직종별 게시판: 글쓰기 버튼 활성화');
+            console.log('직종별 게시판: 로그인 필요, onclick 설정됨');
         } else {
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.style.cursor = 'not-allowed';
-            btn.onclick = function(e) {
-                e.preventDefault();
-                showPermissionModal();
-            };
-            console.log('직종별 게시판: 권한 없음');
+            const hasPermission = await hasBoardInteractionPermission(currentTab);
+            console.log('직종별 게시판 권한 체크 결과:', hasPermission);
+
+            if (hasPermission) {
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    console.log('권한 있음: 글쓰기 페이지로 이동');
+                    window.location.href = 'write.html';
+                };
+                console.log('직종별 게시판: 글쓰기 버튼 활성화');
+            } else {
+                btn.style.opacity = '0.7';
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    console.log('권한 없음: 권한 모달 표시');
+                    showPermissionModal();
+                };
+                console.log('직종별 게시판: 권한 없음');
+            }
         }
     }
 }
 
 // 로그인 필요 모달
 function showLoginRequiredModal() {
-    let modal = document.getElementById('loginRequiredModal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'loginRequiredModal';
-        modal.className = 'modal';
-        modal.style.display = 'flex';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <span class="modal-message">로그인 후 글쓰기가 가능합니다.</span>
-                <button class="btn-login-modal" id="goLoginBtn">로그인 페이지로 이동</button>
-                <button class="btn-close-modal" id="closeLoginModal">닫기</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        document.getElementById('goLoginBtn').onclick = function() {
-            window.location.href = 'login.html?next=write.html';
-        };
-        document.getElementById('closeLoginModal').onclick = function() {
-            modal.style.display = 'none';
-        };
-    } else {
-        modal.style.display = 'flex';
-    }
+    console.log('showLoginRequiredModal 호출됨');
+    alert('로그인을 하세요.');
+    window.location.href = 'login.html?next=write.html';
 }
 // 권한 체크 유틸리티 (직종별 게시판 상호작용)
 async function hasBoardInteractionPermission(boardType) {
@@ -120,6 +114,13 @@ async function hasBoardInteractionPermission(boardType) {
             return false;
         }
 
+        console.log('Permission check data:', {
+            boardType,
+            targetProfession,
+            userEmail: currentUser.email,
+            data
+        });
+
         // 사용자의 job이 해당 게시판의 profession과 일치하고, is_verified가 true인지 확인
         return data && data.job === targetProfession && data.is_verified === true;
 
@@ -131,8 +132,8 @@ async function hasBoardInteractionPermission(boardType) {
 
 // 권한 안내 모달 제어
 function showPermissionModal() {
-    const modal = document.getElementById('permissionModal');
-    if (modal) modal.style.display = 'flex';
+    alert('해당 직종 인증이 필요합니다.');
+    // 이동하지 않음 - 사용자가 이미 로그인한 상태
 }
 function hidePermissionModal() {
     const modal = document.getElementById('permissionModal');
@@ -463,26 +464,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    currentTab = 'all';
-    currentPage = 1;
+    // 게시글 렌더링 (초기화 코드는 DOMContentLoaded로 이동)
     renderBoardPosts();
-
-    // auth.js가 로드될 때까지 기다린 후 버튼 업데이트
-    await waitForAuthLoad();
-    updateWriteButton();
-
-    // robust 이벤트 위임
-    document.body.addEventListener('click', function(e) {
-        const btn = e.target.closest('.btn-write');
-        if (btn) {
-            if (btn.closest('form')) e.preventDefault();
-            window.location.href = 'write.html';
-        }
-    });
-
-    window.addEventListener('error', function(event) {
-        console.error('JS Error:', event.message, event.filename, event.lineno);
-    });
 });
 
 // auth.js 로드 대기 함수
@@ -558,4 +541,32 @@ async function hasBoardInteractionPermission(boardType) {
 }
 
 // 불필요한 함수 제거 (공통 구조로 통합)
+
+// DOM 로드 후 초기화
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('DOM loaded, initializing board...');
+    
+    // 초기 게시판 로드
+    currentTab = 'all';
+    currentPage = 1;
+    renderBoardPosts();
+
+    // auth.js가 로드될 때까지 기다린 후 버튼 업데이트
+    await waitForAuthLoad();
+    updateWriteButton();
+
+    // robust 이벤트 위임
+    document.body.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-write-board');
+        if (btn) {
+            e.preventDefault();
+            console.log('글쓰기 버튼 클릭됨');
+            // 실제 동작은 onclick에서 처리
+        }
+    });
+
+    window.addEventListener('error', function(event) {
+        console.error('JS Error:', event.message, event.filename, event.lineno);
+    });
+});
 

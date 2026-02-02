@@ -295,11 +295,13 @@
                 const { error } = await window.supabaseClient
                     .from('users')
                     .insert([{
+                        id: oauthUser.id,  // auth uid 사용
                         email: oauthUser.email,
-                        profession: profession,
-                        location: location,
+                        job: profession,  // profession -> job 필드로 변경
+                        region: location,  // location -> region 필드로 변경
                         experience: experience,
                         certificate_url: certificateUrl,
+                        is_verified: !!certificateFile,  // 인증서가 있으면 true, 없으면 false
                         created_at: new Date().toISOString()
                     }]);
 

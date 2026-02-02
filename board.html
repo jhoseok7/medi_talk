@@ -142,7 +142,10 @@
     .btn-write-board:disabled {
         background: #cbd5e1; color: #888; cursor: not-allowed;
     }
-    .btn-write-board:not(:disabled):hover { background: #008e7e; }
+    .btn-write-board:not(.disabled):hover { background: #008e7e; }
+    .btn-write-board.disabled {
+        background: #cbd5e1; color: #888; cursor: not-allowed;
+    }
     </style>
                     <div class="board-list-wrapper">
                         <table class="board-table">

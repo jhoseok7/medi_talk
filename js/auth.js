@@ -130,8 +130,14 @@ async function loadUserProfile() {
         const { data, error } = await window.supabaseClient
             .from('users')
             .select('*')
-            .eq('email', currentUser.email)
+            .eq('id', currentUser.id)  // id로 조회
             .single();
+
+        console.log('Profile query:', {
+            id: currentUser.id,
+            error: error,
+            data: data
+        });
 
         if (error && error.code !== 'PGRST116') { // PGRST116 = not found
             console.error('Profile load error:', error);
@@ -351,5 +357,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initAuth();
     updateLoginButton();
 });
+
+// window 객체에 함수 노출
+window.isLoggedIn = isLoggedIn;
+window.getCurrentUser = getCurrentUser;
+window.getUserProfession = getUserProfession;
+window.isProfessionCertified = isProfessionCertified;
+window.logout = logout;
+window.updateAuthState = updateAuthState;
 
 })(); // IIFE 종료
