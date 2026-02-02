@@ -27,7 +27,7 @@ async function updateWriteButton() {
             btn.onclick = function(e) {
                 e.preventDefault();
                 console.log('로그인 상태: 글쓰기 페이지로 이동');
-                window.location.href = 'write.html';
+                window.location.href = 'write.html?board=free';
             };
             console.log('자유게시판: 글쓰기 버튼 활성화');
         } else {
@@ -57,7 +57,7 @@ async function updateWriteButton() {
                 btn.onclick = function(e) {
                     e.preventDefault();
                     console.log('권한 있음: 글쓰기 페이지로 이동');
-                    window.location.href = 'write.html';
+                    window.location.href = 'write.html?board=' + currentTab;
                 };
                 console.log('직종별 게시판: 글쓰기 버튼 활성화');
             } else {
@@ -175,6 +175,21 @@ let currentTab = 'all';
 let currentPage = 1;
 const POSTS_PER_PAGE = 25;
 
+// 초기화 플래그
+let boardInitialized = false;
+let currentRequestId = 0;
+let inFlight = false;
+
+// 필터 매핑: 탭 코드 -> DB required_job 값
+const jobMapping = {
+    pt: '물리치료사',
+    ot: '작업치료사',
+    rt: '방사선사',
+    mt: '임상병리사',
+    dt: '치과기공사',
+    dh: '치과위생사'
+};
+
 // URL에서 page 파라미터 읽기
 function getPageFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -231,82 +246,75 @@ function renderPagination(totalPosts) {
 function renderBoardPosts() {
     const tbody = document.getElementById('postTableBody');
     if (!tbody) return;
-    // 탭별 데이터 필터링
-    let filteredPosts = [];
-    if (currentTab === 'all') {
-        filteredPosts = posts;
-    } else {
-        // 직종별 필터: post.profession 또는 post.author.profession
-        const professionMap = {
-            pt: '물리치료사',
-            ot: '작업치료사',
-            rt: '방사선사',
-            mt: '임상병리사',
-            dt: '치과기공사',
-            dh: '치과위생사'
-        };
-        filteredPosts = posts.filter(post => {
-            const prof = post.profession || post.author?.profession || '';
-            return prof === professionMap[currentTab];
-        });
-    }
+
+    // 탭별 데이터 필터링 (Supabase 데이터 사용, 로컬 필터링 제거)
+    let filteredPosts = posts;
+
     if (!filteredPosts || filteredPosts.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="no-data">게시글이 없습니다.</td></tr>';
         renderPagination(0);
         return;
     }
+
     // 최신순 정렬
     const sortedPosts = [...filteredPosts].sort((a, b) => {
         const dateA = new Date(a.createdAt || a.date);
         const dateB = new Date(b.createdAt || b.date);
         return dateB - dateA;
     });
+
     // 페이징 (25개씩)
     const startIdx = (currentPage - 1) * POSTS_PER_PAGE;
     const endIdx = startIdx + POSTS_PER_PAGE;
     const pagePosts = sortedPosts.slice(startIdx, endIdx);
+
     // 렌더링
     let rows = [];
     for (let i = 0; i < pagePosts.length; i++) {
         rows.push(createPostRow(pagePosts[i], startIdx + i, sortedPosts.length));
     }
-    // 게시글이 없으면 빈 메시지 표시
-    if (rows.length === 0) {
-        rows.push(`
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 40px; color: #666; font-size: 1.1rem;">
-                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                    게시글이 없습니다.
-                </td>
-            </tr>
-        `);
-    }
+
     tbody.innerHTML = rows.join('');
     renderPagination(sortedPosts.length);
 }
-// 게시판 탭 전환 (공통 구조, 데이터만 변경)
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', async function() {
-        const tab = this.dataset.tab;
-        const isAlreadyActive = this.classList.contains('active');
-        if (currentTab === tab && isAlreadyActive) {
-            currentPage = 1;
-            renderBoardPosts();
-            await waitForAuthLoad();
-            updateWriteButton();
-            scrollBoardTop();
-            return;
-        }
-        currentTab = tab;
+// 게시판 탭 전환 핸들러 (named handler로 분리)
+function handleTabClick(event) {
+    const tab = this.dataset.tab;
+    if (currentTab === tab) {
         currentPage = 1;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
         renderBoardPosts();
-        await waitForAuthLoad();
+        updateWriteButton();
+        scrollBoardTop();
+        return;
+    }
+    currentTab = tab;
+    currentPage = 1;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    loadPostsFromSupabase().then((loadedPosts) => {
+        posts = loadedPosts; // posts 업데이트
+        renderBoardPosts();
         updateWriteButton();
         scrollBoardTop();
     });
-});
+}
+
+// 게시판 초기화 (이벤트 리스너 바인딩, 중복 방지)
+function initBoard() {
+    if (boardInitialized) {
+        console.log('Board already initialized, skipping...');
+        return;
+    }
+    boardInitialized = true;
+
+    // 탭 클릭 이벤트 바인딩
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', handleTabClick);
+    });
+
+    // 기타 이벤트 바인딩 (필요시 추가)
+    console.log('Board initialized');
+}
 
 function scrollBoardTop() {
     const boardTop = document.querySelector('.board-header') || document.querySelector('.board-list-wrapper');
@@ -319,52 +327,139 @@ function scrollBoardTop() {
 
 
 
-// userPosts(로컬 저장)와 boardPosts(로컬 저장) 합쳐서 posts로 사용
-// Supabase에서 게시글 로딩
-async function loadPostsFromSupabase() {
+// Supabase에서 게시글 로딩 (재시도 로직 포함, requestId로 마지막 요청만 반영)
+async function loadPostsFromSupabase(retryCount = 0) {
+    const requestId = ++currentRequestId;
+    if (inFlight) {
+        console.log('Previous request in flight, skipping...');
+        return;
+    }
+    inFlight = true;
+
     try {
-        // posts와 users 테이블 JOIN해서 작성자 정보 함께 조회
-        const { data, error } = await window.supabaseClient
+        console.log('Loading posts from Supabase...');
+        let query = window.supabaseClient
             .from('posts')
             .select(`
                 *,
-                users!posts_user_id_fkey (
+                users (
+                    id,
                     job,
                     region,
-                    experience
+                    license_date,
+                    is_verified
                 )
             `)
             .order('created_at', { ascending: false });
 
+        // currentTab에 따라 필터 적용
+        console.log('currentTab:', currentTab);
+        if (currentTab === 'all') {
+            // 자유게시판: required_job이 null이거나 'free'인 글만
+            query = query.or('required_job.is.null,required_job.eq.free');
+            console.log('Applied free board filter');
+        } else {
+            // 직종별 필터: jobMapping 사용
+            const requiredJob = jobMapping[currentTab];
+            if (requiredJob) {
+                query = query.eq('required_job', requiredJob);
+                console.log('Applied job filter:', requiredJob);
+            } else {
+                console.log('Unknown tab:', currentTab);
+                return [];
+            }
+        }
+
+        const { data, error } = await query;
+
+        // 요청 ID 체크: 마지막 요청만 반영
+        if (requestId !== currentRequestId) {
+            console.log('Stale request, ignoring...');
+            return;
+        }
+
+        console.log('Supabase query result:', { data, error });
+
         if (error) {
+            // AbortError 시 재시도 (최대 3회)
+            if (error.name === 'AbortError' && retryCount < 3) {
+                console.log(`Query AbortError, retrying in ${500 * (retryCount + 1)}ms... (attempt ${retryCount + 1}/3)`);
+                await new Promise(resolve => setTimeout(resolve, 500 * (retryCount + 1)));
+                return loadPostsFromSupabase(retryCount + 1);
+            }
             console.error('Supabase error:', error);
+            console.error('Error details:', JSON.stringify(error, null, 2));
             return [];
         }
 
+        if (!data || data.length === 0) {
+            console.log('No posts data from Supabase');
+            return [];
+        }
+
+        console.log(`Loaded ${data.length} posts from Supabase`);
+
         // 데이터 구조 변환 (Supabase 형식 -> 기존 코드 형식)
-        return data.map(post => ({
-            id: post.id,
-            title: post.title,
-            content: post.content,
-            profession: post.users?.job || '', // Supabase users 테이블의 job 필드
-            location: post.users?.region || '', // Supabase users 테이블의 region 필드
-            experience: post.users?.experience || '', // Supabase users 테이블의 experience 필드
-            tags: post.tags || [],
-            likes: post.likes || 0,
-            comments: post.comments || 0,
-            views: post.views || 0,
-            createdAt: post.created_at,
-            date: post.created_at,
-            author: {
-                profession: post.users?.job || '',
-                location: post.users?.region || '',
-                experience: post.users?.experience || ''
-            },
-            ...post
+        // 각 게시글의 댓글 수를 실시간으로 계산
+        const postsWithComments = await Promise.all(data.map(async (post) => {
+            console.log('Post data:', post); // 디버깅용
+            console.log('Users data:', post.users); // 디버깅용
+
+            // 해당 게시글의 댓글 수 계산
+            const { count: commentCount, error: commentError } = await window.supabaseClient
+                .from('comments')
+                .select('*', { count: 'exact', head: true })
+                .eq('post_id', post.id);
+
+            if (commentError) {
+                console.error('Comment count error:', commentError);
+            }
+
+            // license_date를 기준으로 연차 계산 (라이센스 취득 연도 기준)
+            let experience = '';
+            if (post.users?.license_date) {
+                const licenseDate = new Date(post.users.license_date);
+                const now = new Date();
+                const licenseYear = licenseDate.getFullYear();
+                const currentYear = now.getFullYear();
+                const yearsOfExperience = currentYear - licenseYear + 1;
+                experience = `${yearsOfExperience}년차`;
+            }
+
+            return {
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                profession: post.users?.job || '', // users 테이블의 job 필드
+                location: post.users?.region || '', // users 테이블의 region 필드만 사용
+                experience: experience, // license_date로부터 계산된 연차
+                tags: post.tags || [],
+                likes: post.likes || 0,
+                comments: commentCount || 0, // 실시간 계산된 댓글 수
+                views: post.views || 0,
+                createdAt: post.created_at,
+                date: post.created_at,
+                author: {
+                    profession: post.users?.job || '',
+                    location: post.users?.region || '',
+                    experience: experience
+                },
+                ...post
+            };
         }));
+
+        return postsWithComments;
     } catch (error) {
+        // AbortError 시 재시도 (최대 3회)
+        if (error.name === 'AbortError' && retryCount < 3) {
+            console.log(`Query AbortError, retrying in ${500 * (retryCount + 1)}ms... (attempt ${retryCount + 1}/3)`);
+            await new Promise(resolve => setTimeout(resolve, 500 * (retryCount + 1)));
+            return loadPostsFromSupabase(retryCount + 1);
+        }
         console.error('Failed to load posts from Supabase:', error);
         return [];
+    } finally {
+        inFlight = false;
     }
 }
 
@@ -385,53 +480,148 @@ let posts = [];
 function createPostRow(post, idx, totalCount) {
     // ...번호 및 인기글 관련 코드 제거...
     const dateVal = post.date || (post.createdAt ? post.createdAt : '');
+
+    // 작성자 정보 구성 (users 테이블 데이터만 사용)
+    const profession = post.author?.profession || post.author?.job || '';
+    const experience = post.author?.experience || '';
+    const location = post.author?.location || post.author?.region || '';
+
+    // 경력을 "n년차" 형식으로 변환 (이미 "년차"가 포함되어 있다면 그대로 사용)
+    const experienceText = experience ? (typeof experience === 'string' && experience.includes('년차') ? experience : `${experience}년차`) : '';
+
+    // 지역명을 간단하게 표시 (예: "서울시" → "서울")
+    const locationText = location.replace(/시$|도$|특별시$|광역시$/, '');
+
+    // 디버깅 로그 추가
+    console.log('createPostRow - profession:', profession, 'experienceText:', experienceText, 'locationText:', locationText, 'comments:', post.comments, 'post.users:', post.users);
+
+    // 클릭 이벤트: 자유게시판 또는 로그인 시 이동, 아니면 로그인 모달
+    let onclickAttr = '';
+    let linkHref = '';
+    if (currentTab === 'all' || (typeof isLoggedIn === 'function' && isLoggedIn())) {
+        onclickAttr = `onclick="location.href='post-detail.html?id=${post.id}'"`;
+        linkHref = `href="post-detail.html?id=${post.id}"`;
+    } else {
+        onclickAttr = `onclick="showLoginRequiredModal()"`;
+        linkHref = '';
+    }
+
     return `
-        <tr class="board-row" onclick="location.href='post-detail.html?id=${post.id}'">
-            <td class="board-title-cell">
-                <a href="post-detail.html?id=${post.id}" class="board-title-link">
+        <div class="board-row" ${onclickAttr}>
+            <div class="board-content">
+                <a ${linkHref} class="board-title-link">
                     ${post.title}
                     <span class="comment-count">
                         ${post.comments && post.comments > 0 ? ` (${post.comments})` : ''}
                     </span>
                 </a>
-            </td>
-            <td>${post.profession ? post.profession : (post.author?.profession || '')} · ${post.experience ? post.experience : (post.author?.experience || '')} · ${post.location ? post.location : (post.author?.location || '')}</td>
-            <td>${formatPostDate(dateVal)}</td>
-            <td>${post.views || 0}</td>
-        </tr>
+            </div>
+            <div class="board-meta">
+                <div class="board-likes">
+                    <i class="far fa-heart"></i>
+                    <span>${post.likes || 0}</span>
+                </div>
+                <div class="board-author">
+                    ${profession} · ${experienceText} · ${locationText}
+                </div>
+                <div class="board-views">
+                    ${post.views || 0}
+                </div>
+                <div class="board-date">
+                    ${formatPostDate(dateVal)}
+                </div>
+            </div>
+        </div>
     `;
 }
 
-// 실시간 키워드 렌더링
-
-
-// 초기화
-
-document.addEventListener('DOMContentLoaded', async function() {
-    // Supabase에서 게시글 로딩
-    posts = await loadPostsFromSupabase();
-
-    // Supabase 로딩 실패시 로컬 데이터 fallback
-    if (posts.length === 0) {
-        let userPosts = loadUserPosts();
-        let boardPosts = loadBoardPosts();
-        posts = [...userPosts, ...boardPosts];
-        console.log('Using local data as fallback');
+// 게시글 렌더링 함수
+function renderBoardPosts() {
+    const postList = document.getElementById('postList');
+    if (!postList) {
+        console.error('postList element not found');
+        return;
     }
 
-    // postNo 마이그레이션: postNo 없는 게시글에만 생성순으로 부여(최초 1회)
-    let nextNo = 1;
-    posts.forEach(post => {
-        if (typeof post.postNo !== 'number' || isNaN(post.postNo)) {
-            post.postNo = nextNo++;
-        } else {
-            if (post.postNo >= nextNo) nextNo = post.postNo + 1;
-        }
-    });
+    if (!posts || posts.length === 0) {
+        postList.innerHTML = '<div style="text-align: center; padding: 40px; color: #64748b;">게시글이 없습니다.</div>';
+        return;
+    }
 
-    // 게시글 렌더링 (초기화 코드는 DOMContentLoaded로 이동)
+    // 페이지네이션 적용
+    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const endIndex = startIndex + POSTS_PER_PAGE;
+    const postsToShow = posts.slice(startIndex, endIndex);
+
+    // 게시글 HTML 생성
+    const postsHTML = postsToShow.map((post, idx) => createPostRow(post, startIndex + idx + 1, posts.length)).join('');
+
+    postList.innerHTML = postsHTML;
+
+    // 페이지네이션 렌더링
+    renderPagination();
+}
+
+// 페이지네이션 렌더링 함수
+function renderPagination() {
+    const pagination = document.getElementById('pagination');
+    if (!pagination) return;
+
+    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+
+    let paginationHTML = '';
+
+    // 이전 버튼
+    if (currentPage > 1) {
+        paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage - 1})">‹</button>`;
+    }
+
+    // 페이지 번호들
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    if (startPage > 1) {
+        paginationHTML += `<button class="page-btn" onclick="changePage(1)">1</button>`;
+        if (startPage > 2) {
+            paginationHTML += `<span class="page-ellipsis">...</span>`;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === currentPage ? ' active' : '';
+        paginationHTML += `<button class="page-btn${activeClass}" onclick="changePage(${i})">${i}</button>`;
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            paginationHTML += `<span class="page-ellipsis">...</span>`;
+        }
+        paginationHTML += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+    }
+
+    // 다음 버튼
+    if (currentPage < totalPages) {
+        paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage + 1})">›</button>`;
+    }
+
+    pagination.innerHTML = paginationHTML;
+}
+
+// 페이지 변경 함수
+function changePage(page) {
+    if (page < 1 || page > Math.ceil(posts.length / POSTS_PER_PAGE)) return;
+
+    currentPage = page;
     renderBoardPosts();
-});
+
+    // 페이지 상단으로 스크롤
+    scrollBoardTop();
+}
 
 // auth.js 로드 대기 함수
 function waitForAuthLoad() {
@@ -505,20 +695,46 @@ async function hasBoardInteractionPermission(boardType) {
     return hasPermission;
 }
 
-// 불필요한 함수 제거 (공통 구조로 통합)
+// 앱 부트스트랩 함수 (중복 실행 방지)
+let booted = false;
+async function boot() {
+    if (booted) {
+        console.log('App already booted, skipping...');
+        return;
+    }
+    booted = true;
 
-// DOM 로드 후 초기화
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log('DOM loaded, initializing board...');
-    
-    // 초기 게시판 로드
-    currentTab = 'all';
-    currentPage = 1;
-    renderBoardPosts();
+    console.log('Booting app...');
 
-    // auth.js가 로드될 때까지 기다린 후 버튼 업데이트
-    await waitForAuthLoad();
-    updateWriteButton();
+    try {
+        // 1. Auth 초기화 대기
+        await window.initAuth();
+        console.log('Auth initialized');
+
+        // 2. 게시판 초기화
+        initBoard();
+        currentTab = 'all';
+        currentPage = 1;
+
+        // 3. 게시글 로드 (auth 완료 후)
+        posts = await loadPostsFromSupabase();
+        renderBoardPosts();
+
+        // 4. UI 업데이트
+        updateWriteButton();
+
+        console.log('App booted successfully');
+    } catch (error) {
+        console.error('Boot error:', error);
+        // fallback
+        posts = [];
+        renderBoardPosts();
+    }
+}
+
+// DOM 로드 후 부트
+document.addEventListener('DOMContentLoaded', function() {
+    boot();
 
     // robust 이벤트 위임
     document.body.addEventListener('click', function(e) {

@@ -13,7 +13,15 @@
     let professionCertified = false;
 
 // Supabase 세션 초기화 (클라이언트 준비 대기)
-async function initAuth() {
+let authInitialized = false;
+let authSubscription = null; // onAuthStateChange subscription
+
+async function initAuth(retryCount = 0) {
+    if (authInitialized && retryCount === 0) {
+        console.log('initAuth already called, skipping...');
+        return;
+    }
+    if (retryCount === 0) authInitialized = true;
     // 로컬 스토리지에서 프로필 정보 불러오기
     userProfession = localStorage.getItem('userProfession');
     professionCertified = localStorage.getItem('professionCertified') === 'true';
@@ -37,6 +45,12 @@ async function initAuth() {
 
         const { data: { session }, error } = await window.supabaseClient.auth.getSession();
         if (error) {
+            // AbortError 시 재시도 (최대 3회)
+            if (error.name === 'AbortError' && retryCount < 3) {
+                console.log(`Auth session AbortError, retrying in ${500 * (retryCount + 1)}ms... (attempt ${retryCount + 1}/3)`);
+                await new Promise(resolve => setTimeout(resolve, 500 * (retryCount + 1)));
+                return initAuth(retryCount + 1);
+            }
             console.error('Auth session error:', error);
             return;
         }
@@ -44,8 +58,13 @@ async function initAuth() {
         currentUser = session?.user || null;
         updateAuthState();
 
+        // 기존 subscription 정리
+        if (authSubscription) {
+            authSubscription.unsubscribe();
+        }
+
         // 인증 상태 변경 리스너 설정 (클라이언트 준비 후)
-        window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        authSubscription = window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
             currentUser = session?.user || null;
             updateAuthState();
 
@@ -56,6 +75,12 @@ async function initAuth() {
         });
 
     } catch (error) {
+        // AbortError 시 재시도
+        if (error.name === 'AbortError' && retryCount < 1) {
+            console.log('Auth init AbortError, retrying in 300ms...');
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return initAuth(retryCount + 1);
+        }
         console.error('Auth initialization error:', error);
     }
 }
@@ -354,9 +379,11 @@ window.isProfessionCertified = isProfessionCertified;
 
 // DOM 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
-    initAuth();
     updateLoginButton();
 });
+
+// auth 초기화 (스크립트 로드 시 실행)
+initAuth();
 
 // window 객체에 함수 노출
 window.isLoggedIn = isLoggedIn;
@@ -365,5 +392,6 @@ window.getUserProfession = getUserProfession;
 window.isProfessionCertified = isProfessionCertified;
 window.logout = logout;
 window.updateAuthState = updateAuthState;
+window.initAuth = initAuth;
 
 })(); // IIFE 종료

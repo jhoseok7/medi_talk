@@ -212,58 +212,76 @@
     gap: 16px;
 }
 
-/* 리스트형 게시판 테이블 */
+/* 게시판 리스트 (flex 레이아웃) */
 .board-list-wrapper {
     width: 100%;
-    overflow-x: auto;
     padding: 20px;  /* 내부 여백 */
 }
-.board-table {
+.board-list {
     width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border: none !important;
-    box-shadow: none !important;
+    background: transparent;
     font-size: 15px;
     margin-bottom: 24px;
-    min-width: 800px;
 }
-.board-table th, .board-table td {
-    padding: 12px 8px;
-    border-bottom: 1px solid #f1f5f9;
-    text-align: center;
+
+.board-row {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.15s;
 }
-.board-table th {
-    background: #f8fafc;
-    color: #00b8a9;
-    font-weight: 700;
+
+.board-row:hover {
+    background: #fafafa;
 }
-.board-table tr:last-child td {
-    border-bottom: none;
+
+.board-content {
+    flex: 1;
+    min-width: 0;
 }
-.board-title-cell {
-    text-align: left;
-    max-width: 320px;
-    white-space: nowrap;
+
+.board-title-link {
+    display: block;
+    text-decoration: none;
+    color: #111;
+    font-weight: 600;
+    font-size: 16px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.board-title-link {
-    color: #1e293b;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s;
-}
+
 .board-title-link:hover {
     color: #00b8a9;
     text-decoration: underline;
 }
-.board-row {
-    cursor: pointer;
-    transition: background 0.15s;
+
+.comment-count {
+    color: #00a3a3;
+    font-weight: 600;
+    font-size: 13px;
+    margin-left: 6px;
 }
-.board-row:hover {
-    background: #f0fdfa;
+
+.board-meta {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.board-likes, .board-author, .board-views, .board-date {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.board-likes {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 @media (max-width: 900px) {
     .board-table {

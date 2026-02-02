@@ -1,3 +1,13 @@
+// 필터 매핑: 탭 코드 -> DB required_job 값
+const jobMapping = {
+    pt: '물리치료사',
+    ot: '작업치료사',
+    rt: '방사선사',
+    mt: '임상병리사',
+    dt: '치과기공사',
+    dh: '치과위생사'
+};
+
 // 권한 체크 유틸리티 (직종별 게시판 상호작용)
 async function hasBoardInteractionPermission(boardType) {
     // 자유게시판은 항상 허용
@@ -80,6 +90,34 @@ document.addEventListener('DOMContentLoaded', function() {
     if (userInfoBox) {
         userInfoBox.innerHTML = `<i class="fas fa-user-circle"></i> ${mockUser.profession}, ${mockUser.experience}, ${mockUser.location}`;
     }
+
+    // URL 파라미터로 게시판 선택 pre-select
+    const urlParams = new URLSearchParams(window.location.search);
+    const boardParam = urlParams.get('board');
+
+    // 로그인 상태에 따라 옵션 제한
+    waitForAuthLoad().then(() => {
+        const boardSelect = document.getElementById('boardSelect');
+        if (!isLoggedIn()) {
+            // 비로그인 시 자유게시판만
+            boardSelect.innerHTML = '<option value="free">자유게시판</option>';
+        } else {
+            // 로그인 시 모든 옵션
+            boardSelect.innerHTML = `
+                <option value="free">자유게시판</option>
+                <option value="pt">물리치료사 게시판</option>
+                <option value="ot">작업치료사 게시판</option>
+                <option value="rt">방사선사 게시판</option>
+                <option value="mt">임상병리사 게시판</option>
+                <option value="dt">치과기공사 게시판</option>
+                <option value="dh">치과위생사 게시판</option>
+            `;
+            // URL 파라미터로 설정된 값 유지
+            if (boardParam) {
+                boardSelect.value = boardParam;
+            }
+        }
+    });
 });
 // 로컬 스토리지에서 사용자 작성 게시글 로드
 function loadLocalPosts() {
@@ -95,9 +133,23 @@ function saveLocalPost(post) {
 }
 
 // 게시글 작성
+let eventListenerAdded = false; // 이벤트 리스너 중복 등록 방지 플래그
 
-document.getElementById('btnSubmitPost').addEventListener('click', async (event) => {
-    event.preventDefault && event.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    if (eventListenerAdded) return; // 이미 추가되었으면 스킵
+    eventListenerAdded = true;
+
+    document.getElementById('btnSubmitPost').addEventListener('click', async (event) => {
+        event.preventDefault && event.preventDefault();
+
+        const btn = document.getElementById('btnSubmitPost');
+        if (btn.disabled) {
+            console.log('Button disabled, ignoring duplicate click');
+            return;
+        }
+        btn.disabled = true; // 버튼 비활성화
+        console.log('Starting post submission...');
+
     const board = document.getElementById('boardSelect').value;
     // 권한 체크 (자유게시판은 항상 허용)
     const hasPermission = await hasBoardInteractionPermission(board);
@@ -107,7 +159,7 @@ document.getElementById('btnSubmitPost').addEventListener('click', async (event)
     }
     const title = document.getElementById('postTitle').value.trim();
     const content = document.getElementById('postContent').value.trim();
-    const tagsInput = document.getElementById('postTags').value.trim();
+    // const tagsInput = document.getElementById('postTags').value.trim(); // 태그 기능 제거
     if (!title) {
         alert('제목을 입력해주세요.');
         document.getElementById('postTitle').focus();
@@ -120,11 +172,70 @@ document.getElementById('btnSubmitPost').addEventListener('click', async (event)
     }
     // === 로그인 여부는 이 시점에서만 검사 ===
     if (!window.isLoggedIn || !isLoggedIn()) {
+        console.log('User not logged in, showing login modal');
         showLoginRequiredModal();
         return;
     }
-    // 실제 등록 로직(로컬)
-    const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+    console.log('User is logged in, proceeding with post creation');
+
+    // 태그 기능 제거 - 빈 배열 사용
+    const tags = [];
+
+    // Supabase에 저장 (로그인된 경우)
+    if (window.supabaseClient && window.getCurrentUser) {
+        try {
+            const currentUser = window.getCurrentUser();
+            console.log('Current user in write.js:', currentUser); // 디버깅용
+            if (currentUser && currentUser.id) {
+                const supabasePost = {
+                    user_id: currentUser.id,
+                    title: title,
+                    content: content,
+                    required_job: board === 'free' ? null : (jobMapping[board] || board)
+                    // like_count, view_count, comment_count는 DB default 사용 (생략)
+                };
+
+                console.log('Saving post to Supabase:', supabasePost); // 디버깅용
+                const { data, error } = await window.supabaseClient
+                    .from('posts')
+                    .insert(supabasePost)
+                    .select()
+                    .single();
+
+                console.log('Supabase response - Data:', data, 'Error:', error); // 디버깅용
+
+                if (error) {
+                    console.error('Supabase 저장 오류:', error);
+                    console.error('Error details:', JSON.stringify(error, null, 2));
+                    // Supabase 저장 실패시 로컬 저장으로 fallback
+                    console.log('Falling back to local storage');
+                } else {
+                    console.log('Supabase에 게시글 저장 성공!');
+                    console.log('Saved post data:', data);
+                    // Supabase 저장 성공시 로컬 저장 생략
+                    window.location.href = 'board.html';
+                    return;
+                }
+            } else {
+                console.log('No current user or user.id, falling back to local storage');
+            }
+        } catch (error) {
+            console.error('Supabase 저장 중 오류:', error);
+            console.error('Error details:', JSON.stringify(error, null, 2));
+            console.error('Error stack:', error.stack);
+            // 오류 발생시 로컬 저장으로 fallback
+            console.log('Error occurred, falling back to local storage');
+            btn.disabled = false; // 버튼 재활성화
+        }
+    } else {
+        console.log('Supabase client or getCurrentUser not available, using local storage');
+        btn.disabled = false; // 버튼 재활성화
+    }
+
+    // 로컬 저장 (fallback 또는 기본 동작)
+    console.log('Using local storage for post creation');
+    // const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : []; // 이미 위에서 선언됨
     const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
     const boardPosts = JSON.parse(localStorage.getItem('boardPosts') || '[]');
     const allPosts = [...userPosts, ...boardPosts];
@@ -157,9 +268,12 @@ document.getElementById('btnSubmitPost').addEventListener('click', async (event)
         createdAt: new Date().toISOString(),
         isLocal: true
     };
+
     saveLocalPost(newPost);
-    alert('게시글이 작성되었습니다!');
-    window.location.href = '/board.html';
+
+    // 메인 페이지로 이동
+    window.location.href = 'board.html';
+    btn.disabled = false; // 버튼 재활성화
 });
 
 // 로그인 필요 모달 (board.js와 동일한 스타일)
@@ -188,32 +302,4 @@ function showLoginRequiredModal() {
         modal.style.display = 'flex';
     }
 }
-
-// ...existing code...
-
-    const newPost = {
-        id: maxId + 1,
-        postNo: maxPostNo + 1, // UI용 번호
-        board: board,
-        title: title,
-        content: content,
-        author: {
-            profession: mockUser.profession,
-            specialty: '',
-            location: mockUser.location,
-            experience: mockUser.experience
-        },
-        tags: tags,
-        likes: 0,
-        comments: 0,
-        views: 0,
-        createdAt: new Date().toISOString(),
-        isLocal: true
-    };
-
-    // 로컬 스토리지에 저장
-    saveLocalPost(newPost);
-
-    // 메인 페이지로 이동
-    alert('게시글이 작성되었습니다!');
-    window.location.href = 'board.html';
+});

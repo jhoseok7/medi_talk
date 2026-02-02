@@ -89,9 +89,9 @@ async function loadPostData() {
                 *,
                 users (
                     job,
-                    specialty,
-                    location,
-                    experience
+                    region,
+                    license_date,
+                    is_verified
                 )
             `)
             .eq('id', postId)
@@ -105,14 +105,25 @@ async function loadPostData() {
         }
 
         // 데이터 구조 변환
+        // 연차 계산 (라이센스 취득 연도 기준)
+        let experience = '';
+        if (postData.users?.license_date) {
+            const licenseDate = new Date(postData.users.license_date);
+            const now = new Date();
+            const licenseYear = licenseDate.getFullYear();
+            const currentYear = now.getFullYear();
+            const yearsOfExperience = currentYear - licenseYear + 1;
+            experience = `${yearsOfExperience}년차`;
+        }
+
         currentPost = {
             id: postData.id,
             title: postData.title,
             content: postData.content,
             profession: postData.users?.job || '', // job 필드에서 profession으로 매핑
             specialty: postData.users?.specialty || '',
-            location: postData.users?.location || '',
-            experience: postData.users?.experience || '',
+            location: postData.users?.region || '', // region 필드
+            experience: experience, // 계산된 연차
             tags: postData.tags || [],
             likes: postData.likes || 0,
             views: postData.views || 0,
@@ -129,9 +140,9 @@ async function loadPostData() {
                 *,
                 users (
                     job,
-                    specialty,
-                    location,
-                    experience
+                    region,
+                    license_date,
+                    is_verified
                 )
             `)
             .eq('post_id', postId)
@@ -142,18 +153,31 @@ async function loadPostData() {
             comments = [];
         } else {
             // 댓글 데이터 구조 변환
-            comments = commentsData.map(comment => ({
-                id: comment.id,
-                content: comment.content,
-                createdAt: comment.created_at,
-                author: {
-                    profession: comment.users?.job || '', // job 필드에서 profession으로 매핑
-                    specialty: comment.users?.specialty || '',
-                    location: comment.users?.location || '',
-                    experience: comment.users?.experience || ''
-                },
-                isMine: window.getCurrentUser() && comment.user_id === window.getCurrentUser().id
-            }));
+            comments = commentsData.map(comment => {
+                // 연차 계산 (라이센스 취득 연도 기준)
+                let experience = '';
+                if (comment.users?.license_date) {
+                    const licenseDate = new Date(comment.users.license_date);
+                    const now = new Date();
+                    const licenseYear = licenseDate.getFullYear();
+                    const currentYear = now.getFullYear();
+                    const yearsOfExperience = currentYear - licenseYear + 1;
+                    experience = `${yearsOfExperience}년차`;
+                }
+
+                return {
+                    id: comment.id,
+                    content: comment.content,
+                    createdAt: comment.created_at,
+                    author: {
+                        profession: comment.users?.job || '', // job 필드에서 profession으로 매핑
+                        specialty: '', // specialty 필드 없음
+                        location: comment.users?.region || '', // region 필드에서 location으로 매핑
+                        experience: experience // 계산된 연차
+                    },
+                    isMine: window.getCurrentUser() && comment.user_id === window.getCurrentUser().id
+                };
+            });
         }
 
         await renderPost();
@@ -355,10 +379,10 @@ async function handleCommentSubmit() {
             .select(`
                 *,
                 users (
-                    profession,
-                    specialty,
-                    location,
-                    experience
+                    job,
+                    region,
+                    license_date,
+                    is_verified
                 )
             `)
             .single();
@@ -368,15 +392,26 @@ async function handleCommentSubmit() {
         }
 
         // 새 댓글을 comments 배열에 추가
+        // 연차 계산 (라이센스 취득 연도 기준)
+        let experience = '';
+        if (data.users?.license_date) {
+            const licenseDate = new Date(data.users.license_date);
+            const now = new Date();
+            const licenseYear = licenseDate.getFullYear();
+            const currentYear = now.getFullYear();
+            const yearsOfExperience = currentYear - licenseYear + 1;
+            experience = `${yearsOfExperience}년차`;
+        }
+
         const newComment = {
             id: data.id,
             content: data.content,
             createdAt: data.created_at,
             author: {
-                profession: data.users?.profession || '',
-                specialty: data.users?.specialty || '',
-                location: data.users?.location || '',
-                experience: data.users?.experience || ''
+                profession: data.users?.job || '',
+                specialty: '',
+                location: data.users?.region || '',
+                experience: experience
             },
             isMine: true
         };
@@ -394,20 +429,6 @@ async function handleCommentSubmit() {
     } catch (error) {
         console.error('댓글 작성 실패:', error);
         alert('댓글 작성에 실패했습니다: ' + error.message);
-    }
-}
-        commentIcon.classList.remove('far');
-        commentIcon.classList.add('fas');
-        commentStat.classList.add('commented');
-    }
-    
-    commentInput.value = '';
-    renderComments();
-    
-    // 게시글 댓글 수 업데이트
-    const commentStatSpan = document.querySelector('#commentStat span');
-    if (commentStatSpan) {
-        commentStatSpan.textContent = currentPost.comments;
     }
 }
 
@@ -524,13 +545,6 @@ function deleteComment(commentId) {
             renderComments();
             updateCommentStats();
         });
-}
-    
-    // 게시글 댓글 수 업데이트
-    const commentStatSpan = document.querySelector('#commentStat span');
-    if (commentStatSpan) {
-        commentStatSpan.textContent = currentPost.comments;
-    }
 }
 
 // 이벤트 리스너 등록
