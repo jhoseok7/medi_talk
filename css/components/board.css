@@ -19,9 +19,11 @@
     margin-top: 0;
 }
 .main-content, .board-section, .board-area {
-    background: #fff;
-    border: none !important;
-    box-shadow: none !important;
+    background: transparent;  /* 페이지 배경과 동일하게 */
+    border: none !important;  /* 외곽선 제거 */
+    border-radius: 8px;
+    padding: 0;  /* 크기 동일화를 위해 padding 제거 */
+    box-shadow: none !important;  /* 그림자도 제거 */
 }
 .board-row:hover {
     background: #f7f7f7 !important;
@@ -214,6 +216,7 @@
 .board-list-wrapper {
     width: 100%;
     overflow-x: auto;
+    padding: 20px;  /* 내부 여백 */
 }
 .board-table {
     width: 100%;

@@ -32,18 +32,18 @@
     .btn-close-modal:hover { background: #cbd5e1; }
     /* --- Board Tab Bar Font Size & Layout --- */
     .board-header {
-        background: #fff !important;
+        background: transparent !important;  /* 페이지 배경과 동일하게 */
         border: none !important;
         box-shadow: none !important;
         display: flex;
         align-items: center;
-        padding: 0 0 0 0;
+        padding: 20px 20px 0 20px;  /* 상단과 좌우 여백 */
     }
     .board-tabs {
         flex-wrap: nowrap;
         overflow-x: visible;
         gap: 0;
-        background: #fff !important;
+        background: transparent !important;  /* 페이지 배경과 동일하게 */
         border: none !important;
         box-shadow: none !important;
         width: auto;
@@ -145,6 +145,13 @@
     .btn-write-board:not(.disabled):hover { background: #008e7e; }
     .btn-write-board.disabled {
         background: #cbd5e1; color: #888; cursor: not-allowed;
+    }
+    /* 활성 탭에 밑줄 표시 */
+    .tab-btn.active {
+        text-decoration: underline;
+        text-underline-offset: 6px;  /* 밑줄과 글씨 간격 */
+        color: #00b8a9;
+        font-weight: 600;
     }
     </style>
                     <div class="board-list-wrapper">

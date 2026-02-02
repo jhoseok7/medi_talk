@@ -77,7 +77,7 @@ async function updateWriteButton() {
 function showLoginRequiredModal() {
     console.log('showLoginRequiredModal 호출됨');
     alert('로그인을 하세요.');
-    window.location.href = 'login.html?next=write.html';
+    // 로그인 페이지로 이동하지 않음
 }
 // 권한 체크 유틸리티 (직종별 게시판 상호작용)
 async function hasBoardInteractionPermission(boardType) {
@@ -224,15 +224,13 @@ function renderPagination(totalPosts) {
     const pagination = document.getElementById('pagination');
     if (!pagination) return;
     const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
-    if (totalPages === 0) {
-        pagination.innerHTML = '';
-        return;
-    }
+    // 게시글이 없어도 최소 1페이지 표시
+    const displayPages = Math.max(totalPages, 1);
     // 페이지 그룹 계산
     const groupSize = 10;
     const currentGroup = Math.floor((currentPage - 1) / groupSize);
     const startPage = currentGroup * groupSize + 1;
-    const endPage = Math.min(startPage + groupSize - 1, totalPages);
+    const endPage = Math.min(startPage + groupSize - 1, displayPages);
 
     let html = '';
     // 맨 앞, 이전 그룹 버튼
@@ -243,8 +241,8 @@ function renderPagination(totalPosts) {
         html += `<button class="page-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
     }
     // 다음 그룹, 맨 뒤 버튼
-    html += `<button class="page-btn nav-btn" data-page="${endPage + 1}" ${endPage === totalPages ? 'disabled' : ''} title="다음">›</button>`;
-    html += `<button class="page-btn nav-btn" data-page="${totalPages}" ${currentPage === totalPages ? 'disabled' : ''} title="맨 뒤">»</button>`;
+    html += `<button class="page-btn nav-btn" data-page="${endPage + 1}" ${endPage === displayPages ? 'disabled' : ''} title="다음">›</button>`;
+    html += `<button class="page-btn nav-btn" data-page="${displayPages}" ${currentPage === displayPages ? 'disabled' : ''} title="맨 뒤">»</button>`;
 
     pagination.innerHTML = html;
     // 페이지 버튼 이벤트
@@ -324,6 +322,17 @@ function renderBoardPosts() {
         for (let i = 0; i < pageNormalPosts.length; i++) {
             rows.push(createPostRow(pageNormalPosts[i], i, null, i, currentPage));
         }
+    }
+    // 게시글이 없으면 빈 메시지 표시
+    if (rows.length === 0) {
+        rows.push(`
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #666; font-size: 1.1rem;">
+                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    게시글이 없습니다.
+                </td>
+            </tr>
+        `);
     }
     tbody.innerHTML = rows.join('');
     renderPagination(normalPosts.length);
