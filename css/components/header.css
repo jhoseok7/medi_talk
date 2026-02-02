@@ -210,3 +210,25 @@
         padding: 8px 12px 8px 35px;
     }
 }
+
+/* 추가 모바일 최적화 */
+@media (max-width: 768px) {
+    .header-container {
+        padding: 0 12px;
+        height: 60px;
+        gap: 15px;
+    }
+
+    .logo {
+        font-size: 20px;
+        gap: 6px;
+    }
+
+    .logo i {
+        font-size: 24px;
+    }
+
+    .header-nav {
+        gap: 6px;
+    }
+}

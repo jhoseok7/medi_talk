@@ -833,3 +833,36 @@ section {
     border: none;
     pointer-events: none;
 }
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 0 8px !important;
+        max-width: 100%;
+    }
+
+    .board-preview-section,
+    .popular-section,
+    .salary-data-section,
+    .notice-section {
+        padding: 12px 16px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .board-preview-section .section-title,
+    .popular-section .section-title,
+    .salary-data-section .section-title,
+    .notice-section .section-title {
+        font-size: 16px;
+    }
+
+    .board-preview-list li,
+    .popular-section .board-preview-list li {
+        font-size: 14px;
+        padding: 8px 0;
+    }
+
+    .content-wrapper {
+        gap: 8px !important;
+    }
+}

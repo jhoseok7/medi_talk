@@ -185,3 +185,10 @@
         font-size: 13px;
     }
 }
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+}
