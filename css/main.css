@@ -867,3 +867,61 @@ section {
         gap: 8px !important;
     }
 }
+
+/* === 모바일 최적화 === */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 12px;
+    }
+
+    /* 터치 인터랙션 개선 */
+    button, .nav-btn, .mobile-menu-item {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* 폰트 크기 최적화 */
+    body {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    h1 { font-size: 24px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+
+    /* 간격 최적화 */
+    .board-preview-section,
+    .popular-section,
+    .salary-data-section,
+    .notice-section {
+        padding: 16px 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* 버튼 크기 최적화 */
+    .btn-primary, .btn-secondary, .btn-login {
+        padding: 12px 16px;
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    /* 입력 필드 터치 최적화 */
+    input, textarea, select {
+        font-size: 16px;
+        padding: 12px;
+        min-height: 44px;
+    }
+
+    /* 카드 간격 최적화 */
+    .post-card {
+        margin-bottom: 12px;
+        padding: 16px;
+    }
+
+    /* 모달 모바일 최적화 */
+    .modal-content {
+        margin: 20px;
+        max-width: calc(100vw - 40px);
+    }
+}
