@@ -181,11 +181,20 @@ async function loadPostData() {
         }
 
         await renderPost();
-        renderComments();
     } catch (error) {
         console.error('데이터 로드 실패:', error);
         alert('데이터를 불러오는데 실패했습니다.');
     }
+}
+
+// 카테고리 라벨 생성 함수
+function getCategoryLabel(boardType) {
+    if (!boardType || boardType === 'all') {
+        return '자유게시판';
+    }
+    
+    // boardType이 이미 직종 이름 ('물리치료사' 등)이므로 그대로 반환
+    return boardType;
 }
 
 // 게시글 렌더링
@@ -193,30 +202,28 @@ async function renderPost() {
     // 게시판 타입 판별 (자유게시판/직종별)
     let boardType = 'all';
     if (currentPost) {
-        // 자유게시판: board/free, 그 외: 직종별
-        if (currentPost.board && currentPost.board !== 'free' && currentPost.board !== 'all') {
-            // board 값이 pt/ot/rt/mt/dt/dh 등
-            boardType = currentPost.board;
-        } else if (currentPost.profession) {
-            // mock 데이터 등에서 profession 값으로 추정
-            const profMap = {
-                '물리치료사': 'pt', '작업치료사': 'ot', '방사선사': 'rt', '임상병리사': 'mt', '치과기공사': 'dt', '치과위생사': 'dh'
-            };
-            boardType = profMap[currentPost.profession] || 'all';
+        // required_job 필드 사용 (저장 시 required_job에 직종 이름 저장됨)
+        if (currentPost.required_job) {
+            boardType = currentPost.required_job; // '물리치료사' 등
         }
     }
+    const categoryLabel = getCategoryLabel(boardType);
     const postDetail = document.getElementById('postDetail');
     
     postDetail.innerHTML = `
         <div class="post-detail-header">
+            <div class="post-category">${categoryLabel}</div>
             <h1 class="post-detail-title">${currentPost.title}</h1>
             <div class="post-detail-meta" style="display: flex; align-items: center; gap: 16px; justify-content: space-between;">
                 <div>
                     <span class="author-badge">
                         ${currentPost.profession || currentPost.author?.profession || '의료인'} · ${currentPost.experience || currentPost.author?.experience || '-'} · ${currentPost.location || currentPost.author?.location || '-'}
                     </span>
-                    <span class="post-detail-time" style="margin-left: 12px; color: #64748b; font-size: 14px;">
+                    <span class="post-detail-time" style="margin-left: 4px; color: #64748b; font-size: 14px;">
                         ${getTimeAgo(currentPost.createdAt)}
+                    </span>
+                    <span class="post-detail-likes" style="margin-left: 4px; color: #9ca3af; font-size: 13px;">
+                        ♡ ${currentPost.likes || 0}
                     </span>
                 </div>
                 <div class="post-detail-views" style="color: #64748b; font-size: 14px;">
@@ -230,11 +237,40 @@ async function renderPost() {
         <div class="post-detail-footer">
             <button class="post-action-btn" id="btnLike"> 
                 <i class="far fa-heart"></i>
-                <span>${currentPost.likes}</span>
+                <span>${currentPost.likes || 0}</span>
             </button>
-            <div class="post-stat clickable" id="commentStat">
-                <i class="far fa-comment"></i>
-                <span>${currentPost.comments}</span>
+        </div>
+        <div style="margin-top: 28px;">
+            <div class="comment-title">
+                댓글 <span class="comment-count">${comments.length}</span>
+            </div>
+            <div class="comment-list" id="commentList">
+                ${comments.map(comment => `
+                    <div class="comment-item" data-comment-id="${comment.id}">
+                        <div class="comment-header">
+                            <div>
+                                <span class="comment-author">
+                                    ${comment.author?.profession || '의료인'} · ${comment.author?.experience || '-'} · ${comment.author?.location || '-'}
+                                </span>
+                                <span class="comment-time">${getTimeAgo(comment.createdAt)}</span>
+                            </div>
+                            <div class="comment-actions">
+                                ${comment.isMine ? (editingCommentId === comment.id ? `
+                                    <button class="btn-comment-action" onclick="cancelEdit(${comment.id})">취소</button>
+                                    <button class="btn-comment-action save" onclick="saveEdit(${comment.id})">저장</button>
+                                ` : `
+                                    <button class="btn-comment-action edit" onclick="editComment(${comment.id})">수정</button>
+                                    <button class="btn-comment-action delete" onclick="deleteComment(${comment.id})">삭제</button>
+                                `) : ''}
+                            </div>
+                        </div>
+                        <div class="comment-content${editingCommentId === comment.id ? ' editing' : ''}"${editingCommentId === comment.id ? ' contenteditable="true"' : ''}>${comment.content}</div>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="comment-write">
+                <textarea class="comment-input" id="commentInput" placeholder="댓글을 작성하세요..." maxlength="500"></textarea>
+                <button class="btn-comment-submit" id="btnCommentSubmit">댓글 달기</button>
             </div>
         </div>
     `;
@@ -253,13 +289,13 @@ async function renderPost() {
     
 
     
-    // 댓글 통계 클릭 시 댓글 섹션으로 스크롤
-    document.getElementById('commentStat').addEventListener('click', () => {
-        document.querySelector('.comment-section').scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-        });
-    });
+    // 댓글 통계 클릭 시 댓글 섹션으로 스크롤 - 통합되어 제거
+    // document.getElementById('commentStat').addEventListener('click', () => {
+    //     document.querySelector('.comment-section').scrollIntoView({ 
+    //         behavior: 'smooth',
+    //         block: 'start'
+    //     });
+    // });
     // 댓글 입력/작성 권한 처리
     const commentInput = document.getElementById('commentInput');
     const btnCommentSubmit = document.getElementById('btnCommentSubmit');
@@ -274,68 +310,77 @@ async function renderPost() {
             btnCommentSubmit.disabled = true;
             btnCommentSubmit.onclick = function(e) { e.preventDefault(); showPermissionModal(); };
         }
+
+        // 댓글 입력창 이벤트 바인딩
+        commentInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleCommentSubmit();
+            }
+        });
     }
 }
 
-// 댓글 렌더링
-function renderComments() {
-    const commentList = document.getElementById('commentList');
-    const commentCount = document.getElementById('commentCount');
-    
-    commentCount.textContent = comments.length;
-    
-    if (comments.length === 0) {
-        commentList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">첫 댓글을 작성해보세요!</p>';
-        return;
-    }
-    
-    commentList.innerHTML = comments.map(comment => `
-        <div class="comment-item" data-comment-id="${comment.id}">
-            <div class="comment-header">
-                <div>
-                    <span class="comment-author">
-                        ${comment.author.profession} · ${comment.author.experience} · ${comment.author.location}
-                    </span>
-                    <span class="comment-time">${getTimeAgo(comment.createdAt)}</span>
-                </div>
-                <div class="comment-actions">
-                    <button class="btn-comment-like${comment.liked ? ' liked' : ''}" onclick="toggleCommentLike(${comment.id})">
-                        <i class="fa${comment.liked ? 's' : 'r'} fa-heart"></i>
-                        <span>${comment.likes || 0}</span>
-                    </button>
-                    ${comment.isMine ? `
-                        <button class="btn-comment-action edit" onclick="editComment(${comment.id})">수정</button>
-                        <button class="btn-comment-action delete" onclick="deleteComment(${comment.id})">삭제</button>
-                    ` : ''}
-                </div>
-            </div>
-            <div class="comment-content">${comment.content}</div>
-        </div>
-    `).join('');
-    
-    // 편집 중인 댓글이 있으면 복원
-    if (editingCommentId) {
-        showEditForm(editingCommentId);
-    }
+// 토스트 메시지 표시 함수
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2000);
 }
 
 // 게시글 좋아요 처리
 function handleLike() {
+    // 비로그인 체크
+    if (!isLoggedIn()) {
+        showToast('로그인 후 공감할 수 있어요');
+        return;
+    }
+
     const btnLike = document.getElementById('btnLike');
+    if (btnLike.disabled) return; // 연타 방지
+
+    btnLike.disabled = true; // 연타 방지
+
     const icon = btnLike.querySelector('i');
+    const span = btnLike.querySelector('span');
     const isLiked = btnLike.classList.contains('liked');
+
+    // 애니메이션
+    btnLike.style.transform = 'scale(1.08)';
+    setTimeout(() => {
+        btnLike.style.transform = 'scale(1.0)';
+    }, 150);
+
     if (isLiked) {
-        currentPost.likes--;
+        currentPost.likes = Math.max(0, (currentPost.likes || 0) - 1);
         btnLike.classList.remove('liked');
         icon.classList.remove('fas');
         icon.classList.add('far');
     } else {
-        currentPost.likes++;
+        currentPost.likes = (currentPost.likes || 0) + 1;
         btnLike.classList.add('liked');
         icon.classList.remove('far');
         icon.classList.add('fas');
     }
-    btnLike.querySelector('span').textContent = currentPost.likes;
+
+    span.textContent = currentPost.likes;
+
+    // 메타 하트 업데이트
+    const metaLikes = document.querySelector('.post-detail-likes');
+    if (metaLikes) {
+        metaLikes.textContent = `♡ ${currentPost.likes}`;
+    }
+
+    // TODO: 실제 DB 업데이트 (post_likes 테이블 등)
+    // 현재는 프론트에서만 처리
+
+    setTimeout(() => {
+        btnLike.disabled = false; // 연타 방지 해제
+    }, 300);
 }
 
 // 댓글 좋아요 토글
@@ -349,7 +394,7 @@ function toggleCommentLike(commentId) {
     } else {
         comment.likes--;
     }
-    renderComments();
+    renderPost();
 }
 
 // 댓글 작성 (Supabase 연동)
@@ -420,8 +465,7 @@ async function handleCommentSubmit() {
         currentPost.comments = (currentPost.comments || 0) + 1;
 
         // UI 업데이트
-        renderComments();
-        updateCommentStats();
+        renderPost();
 
         // 입력창 초기화
         commentInput.value = '';
@@ -451,34 +495,13 @@ function getTimeAgo(dateString) {
 // 댓글 수정
 function editComment(commentId) {
     editingCommentId = commentId;
-    showEditForm(commentId);
-}
-
-// 수정 폼 표시
-function showEditForm(commentId) {
-    const comment = comments.find(c => c.id === commentId);
-    if (!comment) return;
-    
-    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
-    const contentDiv = commentItem.querySelector('.comment-content');
-    const actionsDiv = commentItem.querySelector('.comment-actions');
-    
-    // contenteditable로 변경
-    contentDiv.contentEditable = true;
-    contentDiv.focus();
-    contentDiv.classList.add('editing');
-    
-    // 수정/삭제 버튼을 저장/취소로 변경
-    actionsDiv.innerHTML = `
-        <button class="btn-comment-action" onclick="cancelEdit(${commentId})">취소</button>
-        <button class="btn-comment-action save" onclick="saveEdit(${commentId})">저장</button>
-    `;
+    renderPost();
 }
 
 // 수정 취소
 function cancelEdit(commentId) {
     editingCommentId = null;
-    renderComments();
+    renderPost();
 }
 
 // 수정 저장
@@ -513,7 +536,7 @@ function saveEdit(commentId) {
             }
 
             editingCommentId = null;
-            renderComments();
+            renderPost();
         });
 }
 
@@ -523,12 +546,18 @@ function deleteComment(commentId) {
         return;
     }
 
+    const currentUser = window.getCurrentUser();
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+
     // Supabase 삭제
     window.supabaseClient
         .from('comments')
         .delete()
         .eq('id', commentId)
-        .eq('user_id', window.getCurrentUser().id)
+        .eq('user_id', currentUser.id)
         .then(({ error }) => {
             if (error) {
                 console.error('댓글 삭제 실패:', error);
@@ -540,25 +569,13 @@ function deleteComment(commentId) {
             comments = comments.filter(c => c.id !== commentId);
             currentPost.comments = Math.max(0, (currentPost.comments || 0) - 1);
 
-            renderComments();
-            updateCommentStats();
+            renderPost();
         });
 }
 
 // 이벤트 리스너 등록
 document.addEventListener('DOMContentLoaded', () => {
     loadPostData();
-
-    // 댓글 작성 버튼
-    document.getElementById('btnCommentSubmit').addEventListener('click', handleCommentSubmit);
-
-    // Enter 키로 댓글 작성 (Shift+Enter는 줄바꿈)
-    document.getElementById('commentInput').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleCommentSubmit();
-        }
-    });
 });
 
 // 댓글 수 통계 업데이트

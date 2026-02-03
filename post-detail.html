@@ -73,43 +73,17 @@
     <!-- 메인 컨텐츠 -->
     <main class="main-container container">
         <div class="detail-wrapper">
-            <!-- 뒤로가기 버튼 -->
-            <button class="btn-back" onclick="history.back()">
-                <i class="fas fa-arrow-left"></i>
-                목록으로
-            </button>
-
             <!-- 게시글 상세 -->
             <article class="post-detail" id="postDetail">
                 <!-- JavaScript로 동적 생성 -->
             </article>
-
-            <!-- 댓글 섹션 -->
-            <section class="comment-section">
-                <h3 class="comment-title">
-                    댓글 <span class="comment-count" id="commentCount">0</span>
-                </h3>
-
-                <!-- 댓글 목록 -->
-                <div class="comment-list" id="commentList">
-                    <!-- JavaScript로 동적 생성 -->
-                </div>
-
-                <!-- 댓글 작성 -->
-                <div class="comment-write">
-                    <textarea 
-                        class="comment-input" 
-                        id="commentInput" 
-                        placeholder="댓글을 입력하세요"
-                        rows="3"
-                    ></textarea>
-                    <button class="btn-comment-submit" id="btnCommentSubmit">
-                        댓글 작성
-                    </button>
-                </div>
-            </section>
         </div>
     </main>
+
+    <!-- 토스트 메시지 -->
+    <div id="toast" class="toast" style="display: none;">
+        <span id="toastMessage"></span>
+    </div>
 
     <script src="js/supabaseClient.cdn.js"></script>
     <script src="js/auth.js"></script>

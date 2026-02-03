@@ -264,6 +264,7 @@ async function signUp(email, password, userData = {}) {
             const { error: profileError } = await window.supabaseClient
                 .from('users')
                 .insert([{
+                    id: data.user.id,  // auth user id와 동일하게
                     email: data.user.email,
                     profession: userData.profession || '',
                     specialty: userData.specialty || '',

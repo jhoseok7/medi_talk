@@ -34,24 +34,28 @@
 
 /* 게시글 상세 */
 .post-detail {
-    background: var(--white);
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
+    /* background, padding, border-radius, box-shadow 제거하여 하나의 흐름으로 */
 }
 
 .post-detail-header {
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
-    margin-bottom: 24px;
+    margin-bottom: 12px;
+}
+
+.post-category {
+    font-size: 10px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 12px;
 }
 
 .post-detail-title {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 16px;
-    line-height: 1.4;
+    margin-bottom: 12px;
+    line-height: 1.3;
 }
 
 .post-detail-meta {
@@ -60,6 +64,8 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
+    font-size: 13px;
+    color: #9ca3af;
 }
 
 .post-detail-author {
@@ -70,7 +76,7 @@
 
 .author-badge {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
 }
 
@@ -106,22 +112,43 @@
 .post-detail-footer {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 20px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid transparent; /* 아래 라인 투명하게 */
 }
 
 .post-action-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 16px 24px; /* 클릭 영역 확보 */
     background: transparent;
-    color: var(--text-secondary);
+    color: #9ca3af; /* 비활성 연한 회색 */
+    border: none; /* 테두리 제거 */
     border-radius: 8px;
-    border: 1px solid transparent;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.post-action-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.post-action-btn:active {
+    transform: scale(0.95);
+}
+
+.post-action-btn.liked {
+    color: var(--primary-color); /* 활성 강조 색 */
+}
+
+.post-action-btn.liked:hover {
+    color: #008e7e; /* 더 진한 색 */
+}
     transition: all 0.2s;
 }
 
@@ -168,39 +195,35 @@
     font-size: 14px;
 }
 
-/* 댓글 섹션 */
+/* 댓글 섹션 - 통합되어 제거 */
 .comment-section {
-    background: var(--white);
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
+    /* background, padding, border-radius, box-shadow 제거 */
 }
 
 .comment-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--text-primary);
-    margin-bottom: 20px;
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 16px;
 }
 
 .comment-count {
-    color: var(--primary-color);
+    color: #9ca3af;
 }
 
 /* 댓글 작성 */
 .comment-write {
-    margin-bottom: 30px;
+    /* margin-bottom 제거 */
 }
 
 .comment-input {
     width: 100%;
-    padding: 16px;
+    padding: 8px 12px; /* 높이 최소화 */
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.4;
     resize: vertical;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-family: inherit;
     transition: all 0.2s;
 }
@@ -228,20 +251,29 @@
 .comment-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
 }
 
 .comment-item {
-    padding: 10px 16px;
-    background: #f8fafc;
-    border-radius: 10px;
-    border: 1.5px solid #e2e8f0;
-    transition: box-shadow 0.2s, border-color 0.2s;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    /* padding, background, border, box-shadow 제거 - 단순 텍스트 정렬 */
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+}
+
+.comment-content {
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+.comment-content.editing {
+    border: 1px solid #ccc;
+    padding: 4px;
+    border-radius: 4px;
 }
 
 .comment-item:hover {
-    transform: translateY(-2px);
+    /* transform 제거 */
 }
 
 .comment-header {
@@ -420,5 +452,44 @@
 
     .post-detail-footer {
         flex-wrap: wrap;
+    }
+}
+
+/* 토스트 메시지 */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* 모바일 간격 조정 (PC 간격의 70-80% 축소) */
+@media (max-width: 768px) {
+    .post-detail-header {
+        margin-bottom: 12px;
+    }
+
+    .post-category {
+        margin-bottom: 12px;
+    }
+
+    .post-detail-title {
+        margin-bottom: 12px;
+    }
+
+    .post-detail-time {
+        margin-left: 3px;
     }
 }
