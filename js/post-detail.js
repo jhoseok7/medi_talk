@@ -400,8 +400,7 @@ function toggleCommentLike(commentId) {
 // 댓글 작성 (Supabase 연동)
 async function handleCommentSubmit() {
     if (!window.getCurrentUser()) {
-        alert('댓글을 작성하려면 로그인이 필요합니다.');
-        window.location.href = 'login.html?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+        showToast('댓글을 작성하려면 로그인이 필요합니다.');
         return;
     }
 
@@ -461,7 +460,7 @@ async function handleCommentSubmit() {
             isMine: true
         };
 
-        comments.unshift(newComment);
+        comments.push(newComment);
         currentPost.comments = (currentPost.comments || 0) + 1;
 
         // UI 업데이트
