@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "deploy": "git add . && git commit -m \"Auto deploy\" && git push origin main",
+    "dev": "npx live-server --port=3000"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
     "react-router-dom": "^7.13.0"
