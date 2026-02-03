@@ -341,29 +341,19 @@ async function loadPostsFromSupabase(retryCount = 0) {
         let query = window.supabaseClient
             .from('posts')
             .select(`
-                *,
-                users (
-                    id,
-                    job,
-                    region,
-                    license_date,
-                    is_verified
-                )
+                id, title, content, created_at, user_id, required_job
             `)
             .order('created_at', { ascending: false });
 
         // currentTab에 따라 필터 적용
-        console.log('currentTab:', currentTab);
         if (currentTab === 'all') {
             // 자유게시판: required_job이 null이거나 'free'인 글만
             query = query.or('required_job.is.null,required_job.eq.free');
-            console.log('Applied free board filter');
         } else {
             // 직종별 필터: jobMapping 사용
             const requiredJob = jobMapping[currentTab];
             if (requiredJob) {
                 query = query.eq('required_job', requiredJob);
-                console.log('Applied job filter:', requiredJob);
             } else {
                 console.log('Unknown tab:', currentTab);
                 return [];
@@ -399,11 +389,41 @@ async function loadPostsFromSupabase(retryCount = 0) {
 
         console.log(`Loaded ${data.length} posts from Supabase`);
 
+        // user_id 목록 추출 및 users 데이터 로드
+        const userIds = [...new Set(data.map(post => post.user_id).filter(id => id))];
+        console.log('User IDs found:', userIds);
+        let usersMap = {};
+        if (userIds.length > 0) {
+            const { data: usersData, error: usersError } = await window.supabaseClient
+                .from('users')
+                .select('id, job, region, license_date, is_verified')
+                .in('id', userIds);
+
+            if (usersError) {
+                console.error('Users query error:', usersError);
+                console.error('User IDs that failed:', userIds);
+            } else if (usersData) {
+                usersMap = usersData.reduce((map, user) => {
+                    map[user.id] = user;
+                    return map;
+                }, {});
+                console.log('Users map created:', usersMap);
+                console.log('Users data length:', usersData.length);
+            } else {
+                console.log('No users data returned');
+            }
+        }
+
+        // posts에 users 데이터 추가
+        data.forEach(post => {
+            post.users = usersMap[post.user_id] || null;
+        });
+
         // 데이터 구조 변환 (Supabase 형식 -> 기존 코드 형식)
         // 각 게시글의 댓글 수를 실시간으로 계산
         const postsWithComments = await Promise.all(data.map(async (post) => {
-            console.log('Post data:', post); // 디버깅용
-            console.log('Users data:', post.users); // 디버깅용
+            console.log('Post data:', post);
+            console.log('Users data:', post.users);
 
             // 해당 게시글의 댓글 수 계산
             const { count: commentCount, error: commentError } = await window.supabaseClient
@@ -434,9 +454,9 @@ async function loadPostsFromSupabase(retryCount = 0) {
                 location: post.users?.region || '', // users 테이블의 region 필드만 사용
                 experience: experience, // license_date로부터 계산된 연차
                 tags: post.tags || [],
-                likes: post.likes || 0,
+                likes: 0,
                 comments: commentCount || 0, // 실시간 계산된 댓글 수
-                views: post.views || 0,
+                views: 0,
                 createdAt: post.created_at,
                 date: post.created_at,
                 author: {
@@ -482,12 +502,18 @@ function createPostRow(post, idx, totalCount) {
     const dateVal = post.date || (post.createdAt ? post.createdAt : '');
 
     // 작성자 정보 구성 (users 테이블 데이터만 사용)
-    const profession = post.author?.profession || post.author?.job || '정보 없음';
-    const experience = post.author?.experience || '';
-    const location = post.author?.location || post.author?.region || '정보 없음';
+    const profession = post.users?.job || '';
+    const licenseDate = post.users?.license_date;
+    const location = post.users?.region || '';
 
-    // 경력을 "n년차" 형식으로 변환 (이미 "년차"가 포함되어 있다면 그대로 사용)
-    const experienceText = experience ? (typeof experience === 'string' && experience.includes('년차') ? experience : `${experience}년차`) : '정보 없음';
+    // 연차 계산: 라이센스 연도를 기준으로 현재 연도에서 뺌
+    let experienceText = '';
+    if (licenseDate) {
+        const licenseYear = new Date(licenseDate).getFullYear();
+        const currentYear = new Date().getFullYear();
+        const years = currentYear - licenseYear;
+        experienceText = years >= 0 ? `${years}년차` : '';
+    }
 
     // 지역명을 간단하게 표시 (예: "서울시" → "서울")
     const locationText = location.replace(/시$|도$|특별시$|광역시$/, '');
@@ -519,13 +545,13 @@ function createPostRow(post, idx, totalCount) {
             <div class="board-meta">
                 <div class="board-likes">
                     <i class="far fa-heart"></i>
-                    <span>${post.likes || 0}</span>
+                    <span>0</span>
                 </div>
                 <div class="board-author">
                     ${profession} · ${experienceText} · ${locationText}
                 </div>
                 <div class="board-views">
-                    ${post.views || 0}
+                    ${0}
                 </div>
                 <div class="board-date">
                     ${formatPostDate(dateVal)}
