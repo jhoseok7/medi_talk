@@ -482,12 +482,12 @@ function createPostRow(post, idx, totalCount) {
     const dateVal = post.date || (post.createdAt ? post.createdAt : '');
 
     // 작성자 정보 구성 (users 테이블 데이터만 사용)
-    const profession = post.author?.profession || post.author?.job || '';
+    const profession = post.author?.profession || post.author?.job || '정보 없음';
     const experience = post.author?.experience || '';
-    const location = post.author?.location || post.author?.region || '';
+    const location = post.author?.location || post.author?.region || '정보 없음';
 
     // 경력을 "n년차" 형식으로 변환 (이미 "년차"가 포함되어 있다면 그대로 사용)
-    const experienceText = experience ? (typeof experience === 'string' && experience.includes('년차') ? experience : `${experience}년차`) : '';
+    const experienceText = experience ? (typeof experience === 'string' && experience.includes('년차') ? experience : `${experience}년차`) : '정보 없음';
 
     // 지역명을 간단하게 표시 (예: "서울시" → "서울")
     const locationText = location.replace(/시$|도$|특별시$|광역시$/, '');
