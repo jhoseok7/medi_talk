@@ -75,30 +75,30 @@
 </head>
 <body>
     <header class="site-header">
-        <div class="header-inner container">
+        <div class="header-inner layout-container">
             <div class="header-left">
                 <a href="index.html" class="logo">
                     <i class="fas fa-user-md"></i>
                     <span>메디톡</span>
                 </a>
-                <nav class="header-nav">
-                    <button class="nav-btn" onclick="location.href='board.html'">
-                        <i class="fas fa-comments"></i>
-                        게시판
-                    </button>
-                    <button class="nav-btn" onclick="location.href='salary.html'">
-                        <i class="fas fa-coins"></i>
-                        연봉정보
-                    </button>
-                </nav>
             </div>
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="location.href='board.html'">
+                    <i class="fas fa-comments"></i>
+                    게시판
+                </button>
+                <button class="nav-btn" onclick="location.href='salary.html'">
+                    <i class="fas fa-coins"></i>
+                    연봉정보
+                </button>
+            </nav>
             <div class="header-right">
                 <button class="btn-login">로그인</button>
             </div>
         </div>
     </header>
     <main>
-        <div class="signup-container">
+        <div class="signup-container layout-container">
             <div class="signup-title">회원가입</div>
             <form class="signup-form">
                 <input type="text" placeholder="아이디" required>
@@ -168,5 +168,6 @@
     </script>
     <script src="js/supabaseClient.cdn.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/mobile-menu.js"></script>
 </body>
 </html>

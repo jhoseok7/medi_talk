@@ -214,22 +214,20 @@ async function renderPost() {
         <div class="post-detail-header">
             <div class="post-category">${categoryLabel}</div>
             <h1 class="post-detail-title">${currentPost.title}</h1>
-            <div class="post-detail-meta" style="display: flex; align-items: center; gap: 16px; justify-content: space-between;">
-                <div>
-                    <span class="author-badge">
-                        ${currentPost.profession || currentPost.author?.profession || '의료인'} · ${currentPost.experience || currentPost.author?.experience || '-'} · ${currentPost.location || currentPost.author?.location || '-'}
-                    </span>
-                    <span class="post-detail-time" style="margin-left: 4px; color: #64748b; font-size: 14px;">
-                        ${getTimeAgo(currentPost.createdAt)}
-                    </span>
-                    <span class="post-detail-likes" style="margin-left: 4px; color: #9ca3af; font-size: 13px;">
-                        ♡ ${currentPost.likes || 0}
-                    </span>
-                </div>
-                <div class="post-detail-views" style="color: #64748b; font-size: 14px;">
-                    <span>${currentPost.views}</span>
-                </div>
-            </div>
+        <div class="post-detail-meta">
+            <span class="author-badge">
+                ${currentPost.profession || currentPost.author?.profession || '의료인'} · ${currentPost.experience || currentPost.author?.experience || '-'} · ${currentPost.location || currentPost.author?.location || '-'}
+            </span>
+            <span class="post-detail-likes">
+                ♡ ${currentPost.likes || 0}
+            </span>
+            <span class="post-detail-time">
+                ${getTimeAgo(currentPost.createdAt)}
+            </span>
+            <span class="post-detail-views">
+                조회 ${currentPost.views}
+            </span>
+        </div>
         </div>
         <div class="post-detail-content">
             ${currentPost.content}
@@ -400,7 +398,7 @@ function toggleCommentLike(commentId) {
 // 댓글 작성 (Supabase 연동)
 async function handleCommentSubmit() {
     if (!window.getCurrentUser()) {
-        showToast('댓글을 작성하려면 로그인이 필요합니다.');
+        alert('댓글을 작성하려면 로그인이 필요합니다.');
         return;
     }
 
@@ -475,20 +473,27 @@ async function handleCommentSubmit() {
     }
 }
 
-// 시간 표시 함수 (YY.MM.DD HH:MM 형식)
+// 시간 표시 함수 (당일: HH:MM, 과거: MM-DD)
 function getTimeAgo(dateString) {
     const past = new Date(dateString);
+    const now = new Date();
     
-    // YY.MM.DD 형식
-    const year = past.getFullYear().toString().slice(-2); // 마지막 2자리
-    const month = (past.getMonth() + 1).toString().padStart(2, '0');
-    const day = past.getDate().toString().padStart(2, '0');
+    // 오늘 날짜인지 확인
+    const isToday = past.getDate() === now.getDate() &&
+                   past.getMonth() === now.getMonth() &&
+                   past.getFullYear() === now.getFullYear();
     
-    // HH:MM 형식
-    const hours = past.getHours().toString().padStart(2, '0');
-    const minutes = past.getMinutes().toString().padStart(2, '0');
-    
-    return `${year}.${month}.${day} ${hours}:${minutes}`;
+    if (isToday) {
+        // 당일: HH:MM 형식
+        const hours = past.getHours().toString().padStart(2, '0');
+        const minutes = past.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    } else {
+        // 과거: MM-DD 형식
+        const month = (past.getMonth() + 1).toString().padStart(2, '0');
+        const day = past.getDate().toString().padStart(2, '0');
+        return `${month}-${day}`;
+    }
 }
 
 // 댓글 수정

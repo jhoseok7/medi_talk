@@ -562,7 +562,7 @@ function createPostRow(post, idx, totalCount) {
         <div class="board-row" ${onclickAttr}>
             <div class="board-content">
                 <a ${linkHref} class="board-title-link">
-                    ${post.title}
+                    ${post.title.length > 25 ? post.title.substring(0, 25) + '...' : post.title}
                     ${post.comments > 0 ? `<span class="comment-count">(${post.comments})</span>` : ''}
                 </a>
             </div>
