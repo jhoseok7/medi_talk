@@ -9,6 +9,7 @@
     padding-bottom: 20px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
 }
 .header {
@@ -93,11 +94,13 @@
 }
 /* 게시판 탭 */
 .board-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 0;
-    border-bottom: none;
-    flex-wrap: nowrap;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 18px;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea; /* 리스트와 분리 핵심 */
 }
 
 .board-header-spacer {
@@ -119,37 +122,24 @@
 }
 .btn-write-board:not(:disabled):hover { background: #008e7e; }
 
-.tab-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: #222 !important;
-    font-size: 19px !important;
-    font-weight: 700 !important;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: -2px;
-    white-space: nowrap;
+.board-tabs .tab {
+  position: relative;
+  padding: 12px 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.tab-btn:hover {
-    color: #00b8a9 !important;
-    background: #f1f5f9;
-    border-radius: 8px;
-    transition: background 0.15s, color 0.15s;
+.board-tabs .tab:hover {
+  color: #111;
 }
 
-.tab-btn.active {
-    color: #00b8a9 !important;
-    font-size: 19px !important;
-    font-weight: 700 !important;
-    border-bottom-color: transparent;
-    background: transparent;
-    border-radius: 8px;
+.board-tabs .tab.active {
+  color: #00a3a3;          /* 메디톡 포인트 컬러 */
+  font-weight: 600;
 }
 
 .tab-btn i {
@@ -225,10 +215,10 @@
 }
 
 .board-row {
+    height: 48px;
+    padding: 0 16px;
     display: flex;
     align-items: center;
-    min-height: 48px;
-    padding: 12px 16px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
     transition: background 0.15s;
@@ -266,22 +256,48 @@
     margin-left: 6px;
 }
 
+.comment-count.zero {
+    opacity: 0.4;
+}
+
 .board-meta {
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 16px;
+    justify-content: flex-end;
 }
 
 .board-likes, .board-author, .board-views, .board-date {
-    color: #64748b;
-    font-size: 14px;
+    color: #999;
+    font-size: 12px;
 }
 
 .board-likes {
     display: flex;
     align-items: center;
     gap: 4px;
+    min-width: 50px;
+    text-align: right;
+}
+
+.board-author {
+    min-width: 120px;
+    text-align: right;
+}
+
+.board-views {
+    min-width: 70px;
+    text-align: right;
+}
+
+.board-date {
+    min-width: 70px;
+    text-align: right;
+}
+
+.board-likes i {
+    font-size: 10px;
 }
 @media (max-width: 900px) {
     .board-table {
@@ -407,7 +423,7 @@
 @media (max-width: 768px) {
     .board-row {
         padding: 8px 12px;
-        min-height: 40px;
+        height: 40px;
     }
 
     .board-title-link {

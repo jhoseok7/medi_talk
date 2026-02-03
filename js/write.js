@@ -20,11 +20,8 @@ async function hasBoardInteractionPermission(boardType) {
     const userJob = getUserProfession();
     const isCertified = isProfessionCertified();
 
-    console.log('글쓰기 권한 체크:', { boardType, userJob, isCertified });
-
     // 인증되지 않은 사용자는 접근 불가
     if (!isCertified || !userJob) {
-        console.log('글쓰기: 인증되지 않은 사용자');
         return false;
     }
 
@@ -42,18 +39,11 @@ async function hasBoardInteractionPermission(boardType) {
     const requiredJob = boardPermissionMap[boardType];
 
     if (!requiredJob) {
-        console.log('글쓰기: 알 수 없는 게시판 타입:', boardType);
         return false;
     }
 
     // 사용자의 직종과 게시판 요구 직종 비교
     const hasPermission = userJob === requiredJob;
-
-    console.log('글쓰기 권한 결과:', {
-        userJob,
-        requiredJob,
-        hasPermission
-    });
 
     return hasPermission;
 }
@@ -144,11 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const btn = document.getElementById('btnSubmitPost');
         if (btn.disabled) {
-            console.log('Button disabled, ignoring duplicate click');
             return;
         }
         btn.disabled = true; // 버튼 비활성화
-        console.log('Starting post submission...');
 
     const board = document.getElementById('boardSelect').value;
     // 권한 체크 (자유게시판은 항상 허용)
@@ -172,12 +160,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // === 로그인 여부는 이 시점에서만 검사 ===
     if (!window.isLoggedIn || !isLoggedIn()) {
-        console.log('User not logged in, showing login modal');
         showLoginRequiredModal();
         return;
     }
-
-    console.log('User is logged in, proceeding with post creation');
 
     // 태그 기능 제거 - 빈 배열 사용
     const tags = [];
@@ -186,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.supabaseClient && window.getCurrentUser) {
         try {
             const currentUser = window.getCurrentUser();
-            console.log('Current user in write.js:', currentUser); // 디버깅용
+            if (currentUser && currentUser.id) {
             if (currentUser && currentUser.id) {
                 const supabasePost = {
                     user_id: currentUser.id,
@@ -196,45 +181,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     // like_count, view_count, comment_count는 DB default 사용 (생략)
                 };
 
-                console.log('Saving post to Supabase:', supabasePost); // 디버깅용
                 const { data, error } = await window.supabaseClient
                     .from('posts')
                     .insert(supabasePost)
                     .select()
                     .single();
 
-                console.log('Supabase response - Data:', data, 'Error:', error); // 디버깅용
-
                 if (error) {
                     console.error('Supabase 저장 오류:', error);
                     console.error('Error details:', JSON.stringify(error, null, 2));
                     // Supabase 저장 실패시 로컬 저장으로 fallback
-                    console.log('Falling back to local storage');
                 } else {
-                    console.log('Supabase에 게시글 저장 성공!');
-                    console.log('Saved post data:', data);
                     // Supabase 저장 성공시 로컬 저장 생략
                     window.location.href = 'board.html';
                     return;
                 }
-            } else {
-                console.log('No current user or user.id, falling back to local storage');
             }
         } catch (error) {
             console.error('Supabase 저장 중 오류:', error);
             console.error('Error details:', JSON.stringify(error, null, 2));
             console.error('Error stack:', error.stack);
             // 오류 발생시 로컬 저장으로 fallback
-            console.log('Error occurred, falling back to local storage');
             btn.disabled = false; // 버튼 재활성화
         }
     } else {
-        console.log('Supabase client or getCurrentUser not available, using local storage');
         btn.disabled = false; // 버튼 재활성화
     }
 
     // 로컬 저장 (fallback 또는 기본 동작)
-    console.log('Using local storage for post creation');
     // const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : []; // 이미 위에서 선언됨
     const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
     const boardPosts = JSON.parse(localStorage.getItem('boardPosts') || '[]');

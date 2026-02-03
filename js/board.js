@@ -426,13 +426,39 @@ async function loadPostsFromSupabase(retryCount = 0) {
             console.log('Users data:', post.users);
 
             // 해당 게시글의 댓글 수 계산
-            const { count: commentCount, error: commentError } = await window.supabaseClient
+            let commentCount = 0;
+            const { count: count1, error: commentError } = await window.supabaseClient
                 .from('comments')
                 .select('*', { count: 'exact', head: true })
-                .eq('post_id', post.id);
+                .eq('postId', post.id);  // postId 시도
 
             if (commentError) {
-                console.error('Comment count error:', commentError);
+                console.error('Comment count error for post', post.id, ':', commentError);
+                // post_id로 다시 시도
+                const { count: count2, error: commentError2 } = await window.supabaseClient
+                    .from('comments')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('post_id', post.id);
+                if (commentError2) {
+                    console.error('Comment count error2 for post', post.id, ':', commentError2);
+                    // 다른 필드명 시도
+                    const { count: count3, error: commentError3 } = await window.supabaseClient
+                        .from('comments')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('postid', post.id);
+                    if (commentError3) {
+                        console.error('Comment count error3 for post', post.id, ':', commentError3);
+                    } else {
+                        commentCount = count3 || 0;
+                        console.log('Comment count3 for post', post.id, ':', commentCount);
+                    }
+                } else {
+                    commentCount = count2 || 0;
+                    console.log('Comment count2 for post', post.id, ':', commentCount);
+                }
+            } else {
+                commentCount = count1 || 0;
+                console.log('Comment count for post', post.id, ':', commentCount);
             }
 
             // license_date를 기준으로 연차 계산 (라이센스 취득 연도 기준)
@@ -537,9 +563,7 @@ function createPostRow(post, idx, totalCount) {
             <div class="board-content">
                 <a ${linkHref} class="board-title-link">
                     ${post.title}
-                    <span class="comment-count">
-                        ${post.comments && post.comments > 0 ? ` (${post.comments})` : ''}
-                    </span>
+                    ${post.comments > 0 ? `<span class="comment-count">(${post.comments})</span>` : ''}
                 </a>
             </div>
             <div class="board-meta">

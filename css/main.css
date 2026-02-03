@@ -46,13 +46,16 @@
     flex-direction: column;
     gap: 8px;
 }
+/* === 공용 컨테이너 클래스 === */
+.container {
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
 /* === 메인 컨테이너 가운데 정렬 === */
 .main-container {
-    margin-left: auto !important;
-    margin-right: auto !important;
-    max-width: 1100px;
     width: 100%;
-    padding-top: 0 !important;
+    padding: 0 16px !important;
     margin-top: 0 !important;
 }
 .content-wrapper {
@@ -556,7 +559,6 @@ body {
     color: var(--text-primary);
     background-color: #f5f7fa;
     min-height: 100vh;
-    padding-top: 70px;
 }
 
 /* 컨테이너 */
@@ -567,7 +569,6 @@ body {
     width: 100%;
     padding-top: 0 !important;
     margin-top: 0 !important;
-    padding: 0 12px !important; /* 20px → 12px */
 }
 
 .content-wrapper {

@@ -85,27 +85,25 @@
 </head>
 <body>
     <!-- 헤더 -->
-    <header class="header">
-        <div class="header-container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-user-md"></i>
-                <span>메디톡</span>
-            </a>
-            <nav class="header-nav">
-                <button class="nav-btn active" onclick="location.href='board.html'">
-                    <i class="fas fa-comments"></i>
-                    게시판
-                </button>
-                <button class="nav-btn" onclick="location.href='salary.html'">
-                    <i class="fas fa-coins"></i>
-                    연봉정보
-                </button>
-            </nav>
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="검색어를 입력하세요" id="searchInput">
+    <header class="site-header">
+        <div class="header-inner container">
+            <div class="header-left">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-user-md"></i>
+                    <span>메디톡</span>
+                </a>
+                <nav class="header-nav">
+                    <button class="nav-btn active" onclick="location.href='board.html'">
+                        <i class="fas fa-comments"></i>
+                        게시판
+                    </button>
+                    <button class="nav-btn" onclick="location.href='salary.html'">
+                        <i class="fas fa-coins"></i>
+                        연봉정보
+                    </button>
+                </nav>
             </div>
-            <div class="header-actions">
+            <div class="header-right">
                 <button class="btn-login">로그인</button>
             </div>
         </div>
@@ -114,12 +112,12 @@
     <!-- 메인 컨텐츠 -->
     <!-- 메인 컨텐츠 -->
 
-    <main class="main-container">
+    <main class="main-container container">
         <div class="content-wrapper">
             <section class="board-section">
                 <div class="board-area">
                     <header class="board-header">
-                        <nav class="board-tabs">
+                        <nav class="board-tabs container">
                             <button class="tab-btn active" data-tab="all">자유게시판</button>
                             <button class="tab-btn" data-tab="pt">물리치료사</button>
                             <button class="tab-btn" data-tab="ot">작업치료사</button>

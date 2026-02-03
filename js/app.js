@@ -177,16 +177,20 @@ function getProfessionIcon(profession) {
     return iconMap[profession] || 'fa-user';
 }
 
-// 시간 계산 (상대 시간)
+// 시간 표시 함수 (YY.MM.DD HH:MM 형식)
 function getTimeAgo(dateString) {
-    const now = new Date();
     const past = new Date(dateString);
-    const diffInSeconds = Math.floor((now - past) / 1000);
     
-    if (diffInSeconds < 60) return '방금 전';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}분 전`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}시간 전`;
-    return `${Math.floor(diffInSeconds / 86400)}일 전`;
+    // YY.MM.DD 형식
+    const year = past.getFullYear().toString().slice(-2); // 마지막 2자리
+    const month = (past.getMonth() + 1).toString().padStart(2, '0');
+    const day = past.getDate().toString().padStart(2, '0');
+    
+    // HH:MM 형식
+    const hours = past.getHours().toString().padStart(2, '0');
+    const minutes = past.getMinutes().toString().padStart(2, '0');
+    
+    return `${year}.${month}.${day} ${hours}:${minutes}`;
 }
 
 // 게시판 탭 이벤트 (토글 방식) - nav-btn 클래스 사용

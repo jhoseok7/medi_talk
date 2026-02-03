@@ -216,7 +216,7 @@ async function renderPost() {
                         ${currentPost.profession || currentPost.author?.profession || '의료인'} · ${currentPost.experience || currentPost.author?.experience || '-'} · ${currentPost.location || currentPost.author?.location || '-'}
                     </span>
                     <span class="post-detail-time" style="margin-left: 12px; color: #64748b; font-size: 14px;">
-                        ${currentPost.date || getTimeAgo(currentPost.createdAt)}
+                        ${getTimeAgo(currentPost.createdAt)}
                     </span>
                 </div>
                 <div class="post-detail-views" style="color: #64748b; font-size: 14px;">
@@ -432,22 +432,20 @@ async function handleCommentSubmit() {
     }
 }
 
-// 시간 표시 함수
+// 시간 표시 함수 (YY.MM.DD HH:MM 형식)
 function getTimeAgo(dateString) {
-    const now = new Date();
     const past = new Date(dateString);
-    const diffInSeconds = Math.floor((now - past) / 1000);
     
-    if (diffInSeconds < 60) return '방금 전';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}분 전`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}시간 전`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}일 전`;
+    // YY.MM.DD 형식
+    const year = past.getFullYear().toString().slice(-2); // 마지막 2자리
+    const month = (past.getMonth() + 1).toString().padStart(2, '0');
+    const day = past.getDate().toString().padStart(2, '0');
     
-    return past.toLocaleDateString('ko-KR', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    });
+    // HH:MM 형식
+    const hours = past.getHours().toString().padStart(2, '0');
+    const minutes = past.getMinutes().toString().padStart(2, '0');
+    
+    return `${year}.${month}.${day} ${hours}:${minutes}`;
 }
 
 // 댓글 수정

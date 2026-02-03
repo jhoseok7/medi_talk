@@ -74,12 +74,27 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-user-md"></i>
-                <span>메디톡</span>
-            </a>
+    <header class="site-header">
+        <div class="header-inner container">
+            <div class="header-left">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-user-md"></i>
+                    <span>메디톡</span>
+                </a>
+                <nav class="header-nav">
+                    <button class="nav-btn" onclick="location.href='board.html'">
+                        <i class="fas fa-comments"></i>
+                        게시판
+                    </button>
+                    <button class="nav-btn" onclick="location.href='salary.html'">
+                        <i class="fas fa-coins"></i>
+                        연봉정보
+                    </button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button class="btn-login">로그인</button>
+            </div>
         </div>
     </header>
     <main>
