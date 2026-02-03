@@ -90,70 +90,10 @@
     border-radius: 1px;
 }
 
-/* 모바일 햄버거 메뉴 버튼 */
-.mobile-menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.mobile-menu-toggle:hover {
-    background-color: #f1f5f9;
-    color: #334155;
-}
-
-/* 모바일 메뉴 */
-.mobile-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 999;
-}
-
-.mobile-menu.show {
-    display: block;
-}
-
-.mobile-menu-content {
-    padding: 16px 0;
-}
-
-.mobile-menu-item {
+/* 우측: 로그인 */
+.header-right {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    color: #374151;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-}
-
-.mobile-menu-item:hover {
-    background-color: #f9fafb;
-    color: #00a3a3;
-}
-
-.mobile-menu-item i {
-    width: 20px;
-    text-align: center;
 }
 
 .btn-login {
@@ -180,25 +120,5 @@
 @media (max-width: 720px) {
     .header-left .header-nav {
         display: none;
-    }
-
-    .mobile-menu-toggle {
-        display: block;
-    }
-
-    .btn-login {
-        display: none;
-    }
-
-    .header-inner {
-        padding: 0 12px;
-    }
-
-    .logo {
-        font-size: 20px;
-    }
-
-    .logo i {
-        font-size: 24px;
     }
 }

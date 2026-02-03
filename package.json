@@ -1,25 +1,6 @@
 {
-  "name": "medtalk",
-  "version": "1.0.0",
-  "description": "Medical community platform for healthcare professionals",
-  "main": "index.html",
-  "scripts": {
-    "dev": "live-server --port=8080 --open=/",
-    "build": "echo 'No build step required for static site'",
-    "preview": "live-server --port=3000 --open=/"
-  },
   "dependencies": {
-    "@supabase/supabase-js": "^2.93.3"
-  },
-  "devDependencies": {
-    "live-server": "^1.2.2"
-  },
-  "keywords": [
-    "medical",
-    "community",
-    "healthcare",
-    "supabase"
-  ],
-  "author": "MedTalk Team",
-  "license": "MIT"
+    "@supabase/supabase-js": "^2.93.3",
+    "react-router-dom": "^7.13.0"
+  }
 }

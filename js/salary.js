@@ -589,6 +589,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     dummyData.forEach(data => saveSalaryData(data));
     
+    console.log('✅ 더미 데이터 생성 완료:', dummyData.length, '개');
+    console.log('✅ localStorage에 저장된 데이터:', JSON.parse(localStorage.getItem('salaryData') || '[]').length, '개');
+    
     // 이벤트 리스너
     document.getElementById('btnParticipate').addEventListener('click', openSalaryModal);
     
@@ -596,6 +599,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const regionProfessionFilter = document.getElementById('regionFilterProfession');
     const regionExperienceFilter = document.getElementById('regionFilterExperience');
     const btnRegionReset = document.getElementById('btnRegionReset');
+    
+    console.log('지역 필터 요소 확인:', {
+        profession: regionProfessionFilter,
+        experience: regionExperienceFilter,
+        reset: btnRegionReset
+    });
     
     if (regionProfessionFilter) {
         regionProfessionFilter.addEventListener('change', function() {
